@@ -1,0 +1,7 @@
+name:test room
+short:short discription
+long:long discription
+doorn:false
+doore:true
+doors:false
+doorw:true

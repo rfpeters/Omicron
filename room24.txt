@@ -1,0 +1,7 @@
+name:captain's quarters
+long:long description
+short:short description
+doorn:false
+doore:false
+doors:false
+doorw:true

@@ -1,0 +1,7 @@
+name:galley
+long:long description
+short:short description
+doorn:true
+doore:true
+doors:true
+doorw:false

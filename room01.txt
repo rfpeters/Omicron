@@ -1,0 +1,7 @@
+name:brig
+long:long description
+short:short description
+doorn:false
+doore:false
+doors:true
+doorw:false

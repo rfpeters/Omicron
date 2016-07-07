@@ -1,0 +1,7 @@
+name:lavatory
+long:long description
+short:short description
+doorn:true
+doore:false
+doors:true
+doorw:false

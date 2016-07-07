@@ -1,0 +1,7 @@
+name:bridge
+long:long description
+short:short description
+doorn:false
+doore:true
+doors:true
+doorw:false

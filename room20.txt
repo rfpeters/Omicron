@@ -1,0 +1,7 @@
+name:armory
+long:long description
+short:short description
+doorn:true
+doore:false
+doors:false
+doorw:true

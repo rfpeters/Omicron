@@ -1,0 +1,7 @@
+name:engine room
+long:long description
+short:short description
+doorn:true
+doore:true
+doors:false
+doorw:true

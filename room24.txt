@@ -1,6 +1,7 @@
 name:captain's quarters
 long:long description
 short:short description
+item:
 doorn:false
 doore:false
 doors:false

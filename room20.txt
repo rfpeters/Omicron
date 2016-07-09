@@ -1,6 +1,7 @@
 name:armory
 long:long description
 short:short description
+item:
 doorn:true
 doore:false
 doors:false

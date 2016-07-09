@@ -1,6 +1,7 @@
 name:general quarters 2
 long:long description
 short:short description
+item:
 doorn:false
 doore:false
 doors:true

@@ -104,6 +104,10 @@ void createRooms(Room roomArray[3][5], int x, int y)
 				
 				std::getline(infile, line);
 				line.erase(0, line.find(delimiter) + delimiter.length());
+				roomArray[i][j].addItem(line);
+				
+				std::getline(infile, line);
+				line.erase(0, line.find(delimiter) + delimiter.length());
 				if (!line.empty() && line[line.length() - 1] == '\r')
 				{
 					line.erase(line.length() - 1);

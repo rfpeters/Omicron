@@ -1,6 +1,7 @@
 name:lavatory
 long:long description
 short:short description
+item:
 doorn:true
 doore:false
 doors:true

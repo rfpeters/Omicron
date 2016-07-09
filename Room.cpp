@@ -75,3 +75,13 @@ bool Room::getIsDoorW()
 {
 	return isDoorW;
 }
+
+std::vector<std::string> Room::getItems()
+{
+	return items;
+}
+
+void Room::addItem(std::string item)
+{
+	items.push_back(item);
+}

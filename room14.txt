@@ -1,6 +1,7 @@
 name:bridge
 long:long description
 short:short description
+item:
 doorn:false
 doore:true
 doors:true

@@ -15,7 +15,7 @@ class Room
 		std::string roomName;
 		std::string longDesc;
 		std::string shortDesc;
-		std::vector<std::string> items:
+		std::vector<std::string> items;
 
 		//for navigation, we can test to see if current room has a doorway
 		bool isDoorN;

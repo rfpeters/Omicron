@@ -9,6 +9,7 @@
 #include "Room.hpp"
 
 void createRooms(Room[3][5], int, int);
+void moveRoom(Room, int&, int&, std::string);
 
 int main()
 {
@@ -65,6 +66,22 @@ int main()
 	//////test current room and navigation - end
 
 /*****************for navigation - end************************/
+
+/*****************test moveRooms() - start***********************/
+	currentX = 0;
+	currentY = 4;
+	std::string d = "";
+	std::cin >> d;
+	moveRoom(currentRoom, currentX, currentY, d);
+	currentRoom = roomArray[currentX][currentY];
+
+	// update current room 
+	//currentRoom = roomArray[currentX][currentY];
+
+	std::cout << "After standard input currentX and currentY, current room name is " <<
+		currentRoom.getRoomName() << "\nat " << currentX << "," << currentY << std::endl << std::endl;
+
+/*****************test moveRooms() - end***********************/
 
 
 	return 0;
@@ -195,4 +212,30 @@ void createRooms(Room roomArray[3][5], int x, int y)
 	std::cout << roomArray[0][1].getIsDoorS() << std::endl;
 	std::cout << roomArray[0][1].getIsDoorW() << std::endl << std::endl;
 */
+}
+
+void moveRoom(Room currentRoom, int &currentX, int &currentY, std::string d) {
+	//Room roomArray[3][5];
+	// move south
+	if (d == "s" && currentRoom.getIsDoorS() == false) {
+		currentY--;
+	}
+
+	// move north
+	else if (d == "n" && currentRoom.getIsDoorN() == false) {
+		currentY++;
+	}
+
+	// move east
+	else if (d == "e" && currentRoom.getIsDoorE() == false) {
+		currentX++;
+	}
+
+	// move west
+	else if (d == "w" && currentRoom.getIsDoorW() == false) {
+		currentX--;
+	}
+	else
+		std::cout << "No door in that direction";
+
 }

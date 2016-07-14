@@ -1,6 +1,6 @@
 name:general quarters 2
-long:long description
-short:short description
+long:long description general quarters 2
+short:You are in the general quarters 2. There are doors to the south and west.
 item:
 doorn:false
 doore:false

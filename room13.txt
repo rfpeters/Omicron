@@ -1,6 +1,6 @@
 name:lounge
-long:long description
-short:short description
+long:long description lounge
+short:You are in the lounge. There are doors to the north, east, south and west.
 item:
 doorn:true
 doore:true

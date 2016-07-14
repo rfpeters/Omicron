@@ -1,6 +1,6 @@
 name:galley
-long:long description
-short:short description
+long:long description galley
+short:You are in the galley. There are doors to the north, east and south.
 item:
 doorn:true
 doore:true

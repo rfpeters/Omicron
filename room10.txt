@@ -1,6 +1,6 @@
 name:engine room
-long:long description
-short:short description
+long:long description engine room
+short:You are in the engine room. There are doors to the north, east and west.
 item:
 doorn:true
 doore:true

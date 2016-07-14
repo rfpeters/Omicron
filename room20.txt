@@ -1,6 +1,6 @@
 name:armory
-long:long description
-short:short description
+long:long description armory
+short:You are in the armory. There are doors to the north and west.
 item:
 doorn:true
 doore:false

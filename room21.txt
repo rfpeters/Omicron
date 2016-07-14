@@ -1,6 +1,6 @@
 name:lavatory
-long:long description
-short:short description
+long:long description lavatory
+short:You are in the lavatory and it stinks. There are doors to the north and south.
 item:
 doorn:true
 doore:false

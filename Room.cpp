@@ -40,6 +40,11 @@ void Room::setIsDoorW(bool doorW)
 	isDoorW = doorW;
 }
 
+void Room::setHasVisited(bool visited)
+{
+	hasVisited = visited;
+}
+
 //getters
 std::string Room::getRoomName()
 {
@@ -79,6 +84,11 @@ bool Room::getIsDoorW()
 std::vector<std::string> Room::getItems()
 {
 	return items;
+}
+
+bool Room::getHasVisited()
+{
+	return hasVisited;
 }
 
 void Room::addItem(std::string item)

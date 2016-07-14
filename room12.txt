@@ -1,6 +1,6 @@
 name:sickbay
-long:long description
-short:short description
+long:long description sickbay
+short:You are in the sickbay. There are doors to the north, south and west.
 item:
 doorn:true
 doore:false

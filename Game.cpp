@@ -10,6 +10,8 @@
 
 void createRooms(Room[3][5], int, int);
 void moveRoom(Room, int&, int&, std::string);
+void displayRoomDesc(Room);
+void displayIntro();
 
 int main()
 {
@@ -21,7 +23,8 @@ int main()
 	createRooms(roomArray, MAX_X, MAX_Y);
 
 
-////START OF ROOM CREATION TESTING
+////START OF ROOM STATUS TESTING
+	/*
 	for (i = 0; i < MAX_X; i++)
 	{
 		for (j = 0; j < MAX_Y; j++)
@@ -33,55 +36,43 @@ int main()
 			std::cout << roomArray[i][j].getIsDoorN() << std::endl;
 			std::cout << roomArray[i][j].getIsDoorE() << std::endl;
 			std::cout << roomArray[i][j].getIsDoorS() << std::endl;
-			std::cout << roomArray[i][j].getIsDoorW() << std::endl << std::endl;
+			std::cout << roomArray[i][j].getIsDoorW() << std::endl;
+			std::cout << "hasVisited == " << roomArray[i][j].getHasVisited() << std::endl << std::endl;
 		}
 
 	}
+	*/
 
-////END OF ROOM CREATION TESTING
+////END OF ROOM STATUS TESTING
 
 
 
-/*****************for navigation - start************************/
-
-	int currentX = 1;	//starts at science lab (1,1)
-	int currentY = 1;
-	Room currentRoom;
-	currentRoom = roomArray[currentX][currentY];	//starts at science lab
-	//if doorN is true currentY++
-	//if doorE is true currentX++
-	//if doorS is true currentY--
-	//if doorW is true currentX--
-	//then assign to currentRoom
-
-	//////test current room and navigation - start
-	std::cout << "current room name is " << currentRoom.getRoomName() << "\nat " << currentX << "," << currentY << std::endl << std::endl;
-	currentX++;
-	currentY++;
+	int currentX = 0;
+	int currentY = 4;
+	Room currentRoom; //not quite sure we even need currentRoom since we can access everything with roomArray[currentX][currentY] -ML
 	currentRoom = roomArray[currentX][currentY];
-	std::cout << "After incrementing currentX and currentY, current room name is " << 
-					currentRoom.getRoomName() << "\nat " << currentX << "," << currentY << std::endl << std::endl;
-					//room names seems to be storing /r. will probably be fine.
-					//http://stackoverflow.com/questions/14295420/c-cout-overwriting-itself-while-in-for-loop
-	//////test current room and navigation - end
-
-/*****************for navigation - end************************/
-
-/*****************test moveRooms() - start***********************/
-	currentX = 0;
-	currentY = 4;
 	std::string d = "";
-	std::cin >> d;
-	moveRoom(currentRoom, currentX, currentY, d);
-	currentRoom = roomArray[currentX][currentY];
 
-	// update current room 
-	//currentRoom = roomArray[currentX][currentY];
+	displayIntro();
+	displayRoomDesc(currentRoom);
+	roomArray[currentX][currentY].setHasVisited(true);
+	
 
-	std::cout << "After standard input currentX and currentY, current room name is " <<
-		currentRoom.getRoomName() << "\nat " << currentX << "," << currentY << std::endl << std::endl;
+/*****************game loop - start***********************/
+	do {
+		std::cout << "> ";
+		std::cin >> d;
+		moveRoom(currentRoom, currentX, currentY, d);
+		currentRoom = roomArray[currentX][currentY]; //saves a copy of current room to currentRoom
+		
 
-/*****************test moveRooms() - end***********************/
+		displayRoomDesc(currentRoom);
+		roomArray[currentX][currentY].setHasVisited(true);
+
+
+	} while(1); //use CTRL+C to stop loop & program for now
+
+/*****************game loop - end***********************/
 
 
 	return 0;
@@ -183,7 +174,9 @@ void createRooms(Room roomArray[3][5], int x, int y)
 				{
 					roomArray[i][j].setIsDoorW(false);
 				}
-				//can create a constructor is that will be easier
+				
+				roomArray[i][j].setHasVisited(false); //sets all rooms to not visited
+
 				infile.close();
 			}
 			else
@@ -195,47 +188,47 @@ void createRooms(Room roomArray[3][5], int x, int y)
 		}	
 	}
 	
-/*	
-	std::cout << roomArray[0][0].getRoomName() << std::endl;
-	std::cout << roomArray[0][0].getLongDesc() << std::endl;
-	std::cout << roomArray[0][0].getShortDesc() << std::endl;
-	std::cout << roomArray[0][0].getIsDoorN() << std::endl;
-	std::cout << roomArray[0][0].getIsDoorE() << std::endl;
-	std::cout << roomArray[0][0].getIsDoorS() << std::endl;
-	std::cout << roomArray[0][0].getIsDoorW() << std::endl << std::endl;
-	
-	std::cout << roomArray[0][1].getRoomName() << std::endl;
-	std::cout << roomArray[0][1].getLongDesc() << std::endl;
-	std::cout << roomArray[0][1].getShortDesc() << std::endl;
-	std::cout << roomArray[0][1].getIsDoorN() << std::endl;
-	std::cout << roomArray[0][1].getIsDoorE() << std::endl;
-	std::cout << roomArray[0][1].getIsDoorS() << std::endl;
-	std::cout << roomArray[0][1].getIsDoorW() << std::endl << std::endl;
-*/
 }
 
 void moveRoom(Room currentRoom, int &currentX, int &currentY, std::string d) {
 	//Room roomArray[3][5];
 	// move south
-	if (d == "s" && currentRoom.getIsDoorS() == false) {
+	if (d == "s" && currentRoom.getIsDoorS() == true) {
 		currentY--;
 	}
 
 	// move north
-	else if (d == "n" && currentRoom.getIsDoorN() == false) {
+	else if (d == "n" && currentRoom.getIsDoorN() == true) {
 		currentY++;
 	}
 
 	// move east
-	else if (d == "e" && currentRoom.getIsDoorE() == false) {
+	else if (d == "e" && currentRoom.getIsDoorE() == true) {
 		currentX++;
 	}
 
 	// move west
-	else if (d == "w" && currentRoom.getIsDoorW() == false) {
+	else if (d == "w" && currentRoom.getIsDoorW() == true) {
 		currentX--;
 	}
 	else
-		std::cout << "No door in that direction";
+		std::cout << "No door in that direction" << std::endl;
 
+}
+
+void displayRoomDesc(Room currentRoom)
+{
+	if (currentRoom.getHasVisited() == true)
+	{
+		std::cout << currentRoom.getShortDesc() << std::endl << std::endl;
+	}
+	else
+	{
+		std::cout << currentRoom.getLongDesc() << std::endl << std::endl;
+	}
+}
+
+void displayIntro()
+{
+	std::cout << std::endl << "Intro here Intro here Intro here " << std::endl << std::endl;
 }

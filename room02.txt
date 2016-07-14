@@ -1,6 +1,6 @@
 name:stowage
-long:long description
-short:short description
+long:long description stowage
+short:You are in the stowage. There are doors to the north and east.
 item:
 doorn:true
 doore:true

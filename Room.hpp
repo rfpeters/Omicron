@@ -23,6 +23,8 @@ class Room
 		bool isDoorS;
 		bool isDoorW;
 
+		bool hasVisited; // for determining whether to print long or short description
+
 	public:
 		//setters
 		void setRoomName(std::string);
@@ -32,6 +34,7 @@ class Room
 		void setIsDoorE(bool);
 		void setIsDoorS(bool);
 		void setIsDoorW(bool);
+		void setHasVisited(bool);
 
 		//getters
 		std::string getRoomName();
@@ -42,8 +45,10 @@ class Room
 		bool getIsDoorE();
 		bool getIsDoorS();
 		bool getIsDoorW();
+		bool getHasVisited();
 		
 		void addItem(std::string);
+
 
 };
 

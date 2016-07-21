@@ -10,6 +10,7 @@
 
 void createRooms(Room[3][5], int, int);
 void moveRoom(Room, int&, int&, std::string);
+int ParseUserCommand(std::string verb);
 void displayRoomDesc(Room);
 void displayIntro();
 
@@ -60,10 +61,25 @@ int main()
 
 /*****************game loop - start***********************/
 	do {
+		int verbFunction = 0;
+		std::cout << "Enter your command separated by spaces: " << std::endl; // for testing purposes
 		std::cout << "> ";
-		std::cin >> d;
-		moveRoom(currentRoom, currentX, currentY, d);
+		std::cin >> verb >> noun;
+		verbFunction = ParseUserCommand(verb);
+		if (verbFunction == 1)
+		{
+			moveRoom(currentRoom, currentX, currentY, noun);
+		}
+		else if (verbFunction == 0)
+		{
+			std::cout << "For testing. Did not recognize command" << std::endl;
+		}
+		
 		currentRoom = roomArray[currentX][currentY]; //saves a copy of current room to currentRoom
+		
+		//for testing
+		std::cout << "After incrementing currentX and currentY, current room name is " <<
+		currentRoom.getRoomName() << "\nat " << currentX << "," << currentY << std::endl << std::endl;
 		
 
 		displayRoomDesc(currentRoom);
@@ -213,6 +229,26 @@ void moveRoom(Room currentRoom, int &currentX, int &currentY, std::string d) {
 	}
 	else
 		std::cout << "No door in that direction" << std::endl;
+
+}
+
+int ParseUserCommand(std::string verb)
+{
+	if (verb == "move")
+	{
+		std::cout << "You typed move. Now I will call the moveRooms()" << std::endl;
+		return 1;
+	}
+	else if (verb == "grab")
+	{
+		std::cout << "You typed grab, this is placeholder for item function" << std::endl;
+		return 0;
+	}
+	else
+	{
+		std::cout << "I don't recognize that command." << std::endl;
+		return 0;
+	}
 
 }
 

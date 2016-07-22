@@ -9,9 +9,9 @@
 #include "Room.hpp"
 
 void createRooms(Room[3][5], int, int);
-void moveRoom(Room, int&, int&, std::string);
+void moveRoom(Room*, int&, int&, std::string);
 int ParseUserCommand(std::string verb);
-void displayRoomDesc(Room);
+void displayRoomDesc(Room*);
 void displayIntro();
 
 int main()
@@ -50,9 +50,12 @@ int main()
 
 	int currentX = 0;
 	int currentY = 4;
-	Room currentRoom; //not quite sure we even need currentRoom since we can access everything with roomArray[currentX][currentY] -ML
-	currentRoom = roomArray[currentX][currentY];
+	Room *currentRoom; //not quite sure we even need currentRoom since we can access everything with roomArray[currentX][currentY], only makes sense as a pointer -ML
+	currentRoom = &roomArray[currentX][currentY];
 	std::string d = "";
+	std::string verb = "";
+	std::string noun = "";
+
 
 	displayIntro();
 	displayRoomDesc(currentRoom);
@@ -75,11 +78,11 @@ int main()
 			std::cout << "For testing. Did not recognize command" << std::endl;
 		}
 		
-		currentRoom = roomArray[currentX][currentY]; //saves a copy of current room to currentRoom
+		currentRoom = &roomArray[currentX][currentY]; //saves a copy of current room to currentRoom
 		
 		//for testing
-		std::cout << "After incrementing currentX and currentY, current room name is " <<
-		currentRoom.getRoomName() << "\nat " << currentX << "," << currentY << std::endl << std::endl;
+		//std::cout << "After incrementing currentX and currentY, current room name is " <<
+		//currentRoom->getRoomName() << "\nat " << currentX << "," << currentY << std::endl << std::endl;
 		
 
 		displayRoomDesc(currentRoom);
@@ -206,25 +209,25 @@ void createRooms(Room roomArray[3][5], int x, int y)
 	
 }
 
-void moveRoom(Room currentRoom, int &currentX, int &currentY, std::string d) {
+void moveRoom(Room *currentRoom, int &currentX, int &currentY, std::string d) {
 	//Room roomArray[3][5];
 	// move south
-	if (d == "s" && currentRoom.getIsDoorS() == true) {
+	if (d == "s" && currentRoom->getIsDoorS() == true) {
 		currentY--;
 	}
 
 	// move north
-	else if (d == "n" && currentRoom.getIsDoorN() == true) {
+	else if (d == "n" && currentRoom->getIsDoorN() == true) {
 		currentY++;
 	}
 
 	// move east
-	else if (d == "e" && currentRoom.getIsDoorE() == true) {
+	else if (d == "e" && currentRoom->getIsDoorE() == true) {
 		currentX++;
 	}
 
 	// move west
-	else if (d == "w" && currentRoom.getIsDoorW() == true) {
+	else if (d == "w" && currentRoom->getIsDoorW() == true) {
 		currentX--;
 	}
 	else
@@ -252,15 +255,15 @@ int ParseUserCommand(std::string verb)
 
 }
 
-void displayRoomDesc(Room currentRoom)
+void displayRoomDesc(Room *currentRoom)
 {
-	if (currentRoom.getHasVisited() == true)
+	if (currentRoom->getHasVisited() == true)
 	{
-		std::cout << currentRoom.getShortDesc() << std::endl << std::endl;
+		std::cout << currentRoom->getShortDesc() << std::endl << std::endl;
 	}
 	else
 	{
-		std::cout << currentRoom.getLongDesc() << std::endl << std::endl;
+		std::cout << currentRoom->getLongDesc() << std::endl << std::endl;
 	}
 }
 

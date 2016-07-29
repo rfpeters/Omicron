@@ -7,6 +7,8 @@
 #include <string>
 
 #include "Room.hpp"
+#include "Item.hpp"
+
 
 void createRooms(Room[3][5], int, int);
 void moveRoom(Room*, int&, int&, std::string);

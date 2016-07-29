@@ -2,7 +2,7 @@
  * Description: Methods for Room class for Adventure Game program
  * *************************************************************/
 
- #include "Room.hpp"
+#include "Room.hpp"
 
 //setters
 void Room::setRoomName(std::string name)
@@ -94,4 +94,9 @@ bool Room::getHasVisited()
 void Room::addItem(std::string item)
 {
 	items.push_back(item);
+}
+
+void Room::removeItem(std::string item)
+{
+	
 }

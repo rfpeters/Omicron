@@ -3,8 +3,8 @@
  * *******************************************************************/
 
 
- #ifndef ROOM_HPP
- #define ROOM_HPP
+#ifndef ROOM_HPP
+#define ROOM_HPP
 
 #include <string>
 #include <vector>
@@ -54,4 +54,4 @@ class Room
 
 
 
- #endif
+#endif

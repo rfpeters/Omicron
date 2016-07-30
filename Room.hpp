@@ -48,7 +48,7 @@ class Room
 		bool getHasVisited();
 		
 		void addItem(std::string);
-
+		void removeItem(std::string);
 
 };
 

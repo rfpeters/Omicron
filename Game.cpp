@@ -8,6 +8,7 @@
 
 #include "Room.hpp"
 #include "Item.hpp"
+#include "Player.hpp"
 
 
 void createRooms(Room[3][5], int, int);
@@ -18,6 +19,18 @@ void displayIntro();
 
 int main()
 {
+	Player player; //has constructor to initialize all attributes
+
+/**************START TEST OF PLAYER CREATION**********/
+	std::cout << "maxInventoryWeight= " << player.getMaxInventoryWeight() << std::endl;
+	std::cout << "fireOut= " << player.getFireOut() << std::endl;
+	std::cout << "engineFueled= " << player.getEngineFueled() << std::endl;
+	std::cout << "shipStarted= " << player.getShipStarted() << std::endl;
+	std::cout << "alienKilled= " << player.getAlienKilled() << std::endl;
+	std::cout << "foodEaten= " << player.getFoodEaten() << std::endl;
+	std::cout << "spaceSuitOn= " << player.getSpaceSuitOn() << std::endl;
+/**************END TEST OF PLAYER CREATION**********/
+
 	int MAX_X = 3;  //horizontal
 	int MAX_Y = 5;	//vertical
 	int i, j;

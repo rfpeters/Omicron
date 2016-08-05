@@ -14,6 +14,7 @@ class Room
 	private:
 		std::string roomName;
 		std::string longDesc;
+		std::string dependentDesc;
 		std::string shortDesc;
 		std::vector<std::string> items;
 
@@ -29,6 +30,7 @@ class Room
 		//setters
 		void setRoomName(std::string);
 		void setLongDesc(std::string);
+		void setDependentDesc(std::string);
 		void setShortDesc(std::string);
 		void setIsDoorN(bool);
 		void setIsDoorE(bool);
@@ -39,6 +41,7 @@ class Room
 		//getters
 		std::string getRoomName();
 		std::string getLongDesc();
+		std::string getDependentDesc();
 		std::string getShortDesc();
 		std::vector<std::string> getItems();
 		bool getIsDoorN();

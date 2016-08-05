@@ -15,6 +15,11 @@ void Room::setLongDesc(std::string ldesc)
 	longDesc = ldesc;
 }
 
+void Room::setDependentDesc(std::string ddesc)
+{
+	dependentDesc = ddesc;
+}
+
 void Room::setShortDesc(std::string sdesc)
 {
 	shortDesc = sdesc;
@@ -54,6 +59,11 @@ std::string Room::getRoomName()
 std::string Room::getLongDesc()
 {
 	return longDesc;
+}
+
+std::string Room::getDependentDesc()
+{
+	return dependentDesc;
 }
 
 std::string Room::getShortDesc()

@@ -12,24 +12,19 @@
 
 
 void createRooms(Room[3][5], int, int);
-void moveRoom(Room*, int&, int&, std::string);
-int ParseUserCommand(std::string verb);
+void moveRoom(Room*, Room[3][5], int&, int&, std::string);
+void parseUserCommand(Player&, Room*, Room[3][5], int&, int &, std::string);
 void displayRoomDesc(Room*);
 void displayIntro();
+void displayHelpMenu();
+void attack(Player&, Room*);
+int checkWinGame(Player&);
 
 int main()
 {
 	Player player; //has constructor to initialize all attributes
 
-/**************START TEST OF PLAYER CREATION**********/
-	std::cout << "maxInventoryWeight= " << player.getMaxInventoryWeight() << std::endl;
-	std::cout << "fireOut= " << player.getFireOut() << std::endl;
-	std::cout << "engineFueled= " << player.getEngineFueled() << std::endl;
-	std::cout << "shipStarted= " << player.getShipStarted() << std::endl;
-	std::cout << "alienKilled= " << player.getAlienKilled() << std::endl;
-	std::cout << "foodEaten= " << player.getFoodEaten() << std::endl;
-	std::cout << "spaceSuitOn= " << player.getSpaceSuitOn() << std::endl;
-/**************END TEST OF PLAYER CREATION**********/
+
 
 	int MAX_X = 3;  //horizontal
 	int MAX_Y = 5;	//vertical
@@ -63,13 +58,14 @@ int main()
 
 
 
-	int currentX = 0;
+	int currentX = 1;
 	int currentY = 4;
-	Room *currentRoom; //not quite sure we even need currentRoom since we can access everything with roomArray[currentX][currentY], only makes sense as a pointer -ML
+	Room *currentRoom;
 	currentRoom = &roomArray[currentX][currentY];
 	std::string d = "";
 	std::string verb = "";
 	std::string noun = "";
+	std::string userCommand = "";
 
 
 	displayIntro();
@@ -80,29 +76,52 @@ int main()
 /*****************game loop - start***********************/
 	do {
 		int verbFunction = 0;
-		std::cout << "Enter your command separated by spaces: " << std::endl; // for testing purposes
+		//std::cout << "Enter your command separated by spaces: " << std::endl; // for testing purposes
 		std::cout << "> ";
-		std::cin >> verb >> noun;
-		verbFunction = ParseUserCommand(verb);
-		if (verbFunction == 1)
-		{
-			moveRoom(currentRoom, currentX, currentY, noun);
-		}
-		else if (verbFunction == 0)
-		{
-			std::cout << "For testing. Did not recognize command" << std::endl;
-		}
-		
-		currentRoom = &roomArray[currentX][currentY]; //saves a copy of current room to currentRoom
-		
-		//for testing
-		//std::cout << "After incrementing currentX and currentY, current room name is " <<
-		//currentRoom->getRoomName() << "\nat " << currentX << "," << currentY << std::endl << std::endl;
-		
+		std::getline(std::cin, userCommand);
 
-		displayRoomDesc(currentRoom);
-		roomArray[currentX][currentY].setHasVisited(true);
+		if (userCommand == "n" || userCommand == "e" || userCommand == "s" || userCommand == "w")
+		{
+			moveRoom(currentRoom, roomArray, currentX, currentY, userCommand);
+			currentRoom = &roomArray[currentX][currentY];
+			displayRoomDesc(currentRoom);
+			currentRoom->setHasVisited(true);
+		}
+		else
+		{
+			parseUserCommand(player, currentRoom, roomArray, currentX, currentY, userCommand);
+		}
 
+/**************START TEST OF WIN GAME**********/
+		if (userCommand == "switch objs to true")
+		{
+			std::cout << "switching to true" << std::endl;
+			player.setFireOut(true);
+			player.setEngineFueled(true);
+			player.setShipStarted(true);
+			player.setAlienKilled(true);
+			player.setFoodEaten(true);
+			player.setSpaceSuitOn(true);
+		}
+/**************END TEST OF WIN GAME**********/
+
+/**************START TEST OF PLAYER STATUS**********/
+		
+	std::cout << "maxInventoryWeight= " << player.getMaxInventoryWeight() << std::endl;
+	std::cout << "fireOut= " << player.getFireOut() << std::endl;
+	std::cout << "engineFueled= " << player.getEngineFueled() << std::endl;
+	std::cout << "shipStarted= " << player.getShipStarted() << std::endl;
+	std::cout << "alienKilled= " << player.getAlienKilled() << std::endl;
+	std::cout << "foodEaten= " << player.getFoodEaten() << std::endl;
+	std::cout << "spaceSuitOn= " << player.getSpaceSuitOn() << std::endl;
+	
+/**************END TEST OF PLAYER STATUS**********/
+		
+	
+		if (checkWinGame(player))
+		{
+			break;
+		}
 
 	} while(1); //use CTRL+C to stop loop & program for now
 
@@ -134,18 +153,43 @@ void createRooms(Room roomArray[3][5], int x, int y)
 			{
 				std::getline(infile, line);
 				line.erase(0, line.find(delimiter) + delimiter.length());
+				if (!line.empty() && line[line.length() - 1] == '\r')
+				{
+					line.erase(line.length() - 1);
+				}
 				roomArray[i][j].setRoomName(line);
 				
 				std::getline(infile, line);
 				line.erase(0, line.find(delimiter) + delimiter.length());
+				if (!line.empty() && line[line.length() - 1] == '\r')
+				{
+					line.erase(line.length() - 1);
+				}
 				roomArray[i][j].setLongDesc(line);
+
+				std::getline(infile, line);
+				line.erase(0, line.find(delimiter) + delimiter.length());
+				if (!line.empty() && line[line.length() - 1] == '\r')
+				{
+					line.erase(line.length() - 1);
+				}
+				roomArray[i][j].setDependentDesc(line);
 				
 				std::getline(infile, line);
 				line.erase(0, line.find(delimiter) + delimiter.length());
+				if (!line.empty() && line[line.length() - 1] == '\r')
+				{
+					line.erase(line.length() - 1);
+				}
 				roomArray[i][j].setShortDesc(line);
+
 				
 				std::getline(infile, line);
 				line.erase(0, line.find(delimiter) + delimiter.length());
+				if (!line.empty() && line[line.length() - 1] == '\r')
+				{
+					line.erase(line.length() - 1);
+				}
 				roomArray[i][j].addItem(line);
 				
 				std::getline(infile, line);
@@ -224,8 +268,8 @@ void createRooms(Room roomArray[3][5], int x, int y)
 	
 }
 
-void moveRoom(Room *currentRoom, int &currentX, int &currentY, std::string d) {
-	//Room roomArray[3][5];
+void moveRoom(Room *currentRoom, Room roomArray[3][5], int &currentX, int &currentY, std::string d) {
+	
 	// move south
 	if (d == "s" && currentRoom->getIsDoorS() == true) {
 		currentY--;
@@ -246,43 +290,123 @@ void moveRoom(Room *currentRoom, int &currentX, int &currentY, std::string d) {
 		currentX--;
 	}
 	else
-		std::cout << "No door in that direction" << std::endl;
+		std::cout << std::endl << "No door in that direction" << std::endl;
 
 }
 
-int ParseUserCommand(std::string verb)
+void parseUserCommand(Player &player, Room *currentRoom, Room roomArray[3][5], int &currentX, int &currentY, std::string command)
 {
-	if (verb == "move")
+	
+	if (command == "help")
 	{
-		std::cout << "You typed move. Now I will call the moveRooms()" << std::endl;
-		return 1;
+		displayHelpMenu();
 	}
-	else if (verb == "grab")
+	else if (command == "attack")
 	{
-		std::cout << "You typed grab, this is placeholder for item function" << std::endl;
-		return 0;
+		attack(player, currentRoom);
+	}
+	else if (command == "look")
+	{
+		std::cout << currentRoom->getLongDesc() << std::endl;
+		std::cout << currentRoom->getDependentDesc() << std::endl << std::endl;
+	}
+	else if (command == "look at item")
+	{
+		std::cout << "look at item test." << std::endl;
+	}
+	else if (command == "take item")
+	{
+		std::cout << "take item test." << std::endl;
+	}
+	else if (command == "drop item")
+	{
+		std::cout << "drop item test." << std::endl;
+	}
+	else if (command == "inventory")
+	{
+		std::cout << "inventory test." << std::endl;
+	}
+
+	else if (command == "use item")
+	{
+		std::cout << "use item test." << std::endl;
 	}
 	else
 	{
-		std::cout << "I don't recognize that command." << std::endl;
-		return 0;
+		std::cout << std::endl << "That is not a valid command." << std::endl;
 	}
 
 }
 
 void displayRoomDesc(Room *currentRoom)
 {
+	std::cout << std::endl;
+
 	if (currentRoom->getHasVisited() == true)
 	{
-		std::cout << currentRoom->getShortDesc() << std::endl << std::endl;
+		std::cout << currentRoom->getShortDesc() << std::endl;
+
+		if (currentRoom->getDependentDesc() != "")
+		{
+			std::cout << currentRoom->getDependentDesc() << std::endl;
+		}
 	}
 	else
 	{
-		std::cout << currentRoom->getLongDesc() << std::endl << std::endl;
+		std::cout << currentRoom->getLongDesc() << std::endl;
+
+		if (currentRoom->getDependentDesc() != "")
+		{
+			std::cout << currentRoom->getDependentDesc() << std::endl;
+		}
 	}
+
+	std::cout << std::endl;
 }
 
 void displayIntro()
 {
 	std::cout << std::endl << "Intro here Intro here Intro here " << std::endl << std::endl;
+}
+
+void attack(Player &player, Room *currentRoom)
+{
+	std::cout << std::endl;
+
+	if (currentRoom->getRoomName() == "bridge" && player.getAlienKilled() == false)
+	{
+		player.setAlienKilled(true);
+		currentRoom->setDependentDesc("");
+
+		std::cout << "You killed the alien." << std::endl << std::endl;
+	}
+	else
+	{
+		std::cout << "There is nothing to attack." << std::endl << std::endl;
+	}
+}
+
+void displayHelpMenu()
+{
+	std::cout << std::endl;
+	std::cout << "This is the help menu." << std::endl;
+	std::cout << "This is the help menu. Max weight right now set to 5." << std::endl;
+	std::cout << "This is the help menu. List available commands." << std::endl;
+	std::cout << std::endl;
+}
+
+int checkWinGame(Player &player)
+{
+	if (player.getFireOut() == true &&
+		player.getEngineFueled() == true &&
+		player.getShipStarted() == true &&
+		player.getAlienKilled() == true &&
+		player.getFoodEaten() == true &&
+		player.getSpaceSuitOn() == true)
+	{
+		std::cout << std::endl << "CONGRATULATIONS! You have won the game!" << std::endl << std::endl;
+		return 1;
+	}
+	
+	return 0;
 }

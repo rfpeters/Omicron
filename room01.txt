@@ -1,8 +1,9 @@
-name:brig
-long:long description brig
-short:You are in the brig. There is a door to the south.
+name:stowage
+long:long description stowage
+dependent:dependent description stowage
+short:You are in the stowage. There are doors to the north, east and south.
 item:
-doorn:false
-doore:false
+doorn:true
+doore:true
 doors:true
 doorw:false

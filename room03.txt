@@ -1,8 +1,9 @@
-name:galley
-long:long description galley
-short:You are in the galley. There are doors to the north, east and south.
+name:mess hall
+long:long description mess hall
+dependent:dependent description mess hall
+short:You are in the mess hall. There are doors to the north and east.
 item:
 doorn:true
 doore:true
-doors:true
+doors:false
 doorw:false

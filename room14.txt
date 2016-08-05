@@ -1,5 +1,6 @@
 name:bridge
 long:long description bridge
+dependent:You see an alien.
 short:You are in the bridge. There are doors to the east and south.
 item:
 doorn:false

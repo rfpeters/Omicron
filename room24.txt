@@ -1,5 +1,6 @@
 name:captain's quarters
 long:long description captain's quarters
+dependent:
 short:You are in the captain's quarters. There is a door to the west.
 item:
 doorn:false

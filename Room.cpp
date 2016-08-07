@@ -3,6 +3,7 @@
  * *************************************************************/
 
 #include "Room.hpp"
+#include <algorithm>
 
 //setters
 void Room::setRoomName(std::string name)
@@ -107,6 +108,6 @@ void Room::addItem(std::string item)
 }
 
 void Room::removeItem(std::string item)
-{
-	
+{	//reference: http://stackoverflow.com/questions/3385229/c-erase-vector-element-by-value-rather-than-by-position
+	items.erase(std::remove(items.begin(), items.end(), item), items.end());
 }

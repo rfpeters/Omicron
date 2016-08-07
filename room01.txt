@@ -2,7 +2,7 @@ name:stowage
 long:long description stowage
 dependent:dependent description stowage
 short:You are in the stowage. There are doors to the north, east and south.
-item:
+item:item2
 doorn:true
 doore:true
 doors:true

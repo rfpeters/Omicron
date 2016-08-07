@@ -2,7 +2,7 @@ name:galley
 long:long description galley
 dependent:dependent description galley
 short:You are in the galley. There is a door to the south.
-item:
+item:item5
 doorn:false
 doore:false
 doors:true

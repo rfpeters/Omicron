@@ -12,7 +12,7 @@
 
 
 void createRooms(Room[3][5], int, int);
-void moveRoom(Room*, Room[3][5], int&, int&, std::string);
+void moveRoom(Room*, int&, int&, std::string);
 void parseUserCommand(Player&, Room*, Room[3][5], int&, int &, std::string);
 void displayRoomDesc(Room*);
 void displayIntro();
@@ -26,8 +26,8 @@ int main()
 
 
 
-	int MAX_X = 3;  //horizontal
-	int MAX_Y = 5;	//vertical
+	const int MAX_X = 3;	//horizontal
+	const int MAX_Y = 5;	//vertical
 	int i, j;
 	Room roomArray[3][5];
 
@@ -62,9 +62,6 @@ int main()
 	int currentY = 4;
 	Room *currentRoom;
 	currentRoom = &roomArray[currentX][currentY];
-	std::string d = "";
-	std::string verb = "";
-	std::string noun = "";
 	std::string userCommand = "";
 
 
@@ -80,9 +77,10 @@ int main()
 		std::cout << "> ";
 		std::getline(std::cin, userCommand);
 
+		//if a direction is inputted
 		if (userCommand == "n" || userCommand == "e" || userCommand == "s" || userCommand == "w")
 		{
-			moveRoom(currentRoom, roomArray, currentX, currentY, userCommand);
+			moveRoom(currentRoom, currentX, currentY, userCommand);
 			currentRoom = &roomArray[currentX][currentY];
 			displayRoomDesc(currentRoom);
 			currentRoom->setHasVisited(true);
@@ -92,10 +90,14 @@ int main()
 			parseUserCommand(player, currentRoom, roomArray, currentX, currentY, userCommand);
 		}
 
+		currentRoom->addItem("added1");
+		currentRoom->addItem("added2");
+		currentRoom->removeItem("added1");
 /**************START TEST OF WIN GAME**********/
+		/*
 		if (userCommand == "switch objs to true")
 		{
-			std::cout << "switching to true" << std::endl;
+			std::cout << "switching to true..." << std::endl;
 			player.setFireOut(true);
 			player.setEngineFueled(true);
 			player.setShipStarted(true);
@@ -103,6 +105,7 @@ int main()
 			player.setFoodEaten(true);
 			player.setSpaceSuitOn(true);
 		}
+		*/
 /**************END TEST OF WIN GAME**********/
 
 /**************START TEST OF PLAYER STATUS**********/
@@ -131,6 +134,11 @@ int main()
 	return 0;
 }
 
+
+/**********************************************************
+* This function reads in data and populated roomArray with
+* that data.
+***********************************************************/
 void createRooms(Room roomArray[3][5], int x, int y)
 {
 	std::string line;
@@ -183,7 +191,7 @@ void createRooms(Room roomArray[3][5], int x, int y)
 				}
 				roomArray[i][j].setShortDesc(line);
 
-				
+				//add item
 				std::getline(infile, line);
 				line.erase(0, line.find(delimiter) + delimiter.length());
 				if (!line.empty() && line[line.length() - 1] == '\r')
@@ -268,7 +276,13 @@ void createRooms(Room roomArray[3][5], int x, int y)
 	
 }
 
-void moveRoom(Room *currentRoom, Room roomArray[3][5], int &currentX, int &currentY, std::string d) {
+
+/************************************************************************
+* This function increments or decrements either the currentX or currentY
+* variables to navigate through the rooms.
+************************************************************************/
+void moveRoom(Room *currentRoom, int &currentX, int &currentY, std::string d) 
+{
 	
 	// move south
 	if (d == "s" && currentRoom->getIsDoorS() == true) {
@@ -296,7 +310,35 @@ void moveRoom(Room *currentRoom, Room roomArray[3][5], int &currentX, int &curre
 
 void parseUserCommand(Player &player, Room *currentRoom, Room roomArray[3][5], int &currentX, int &currentY, std::string command)
 {
-	
+	std::string command2 = command;
+	std::string delimiter = " ";
+	std::string command3;
+			
+
+	//parse use command delimited by space. If space found, split into two strings.
+	std::size_t found = command.find(delimiter);
+  	if (found!=std::string::npos)
+  	{
+		command.erase(command.find(delimiter), command.length()); //string before first space
+		command2.erase(0, command2.find(delimiter) + delimiter.length()); //part after first space
+		std::cout << "command after delimited: " << command << std::endl;
+		std::cout << "command2 after delimited: " << command2 << std::endl;
+		
+		if (!(command2 != "fire extinguisher" || command2 != "access code")) ////////two-worded items should skip this step//////////////
+		{
+			//If space found, split into another two strings.
+			found = command2.find(delimiter);
+		  	if (found!=std::string::npos)
+		  	{
+				command3 = command2;
+				command2.erase(command2.find(delimiter), command2.length()); //string before first space
+				command3.erase(0, command3.find(delimiter) + delimiter.length()); //part after first space
+				std::cout << "command2 after delimited: " << command2 << std::endl;
+				std::cout << "command3 after delimited: " << command3 << std::endl;
+			}
+		}
+	}
+
 	if (command == "help")
 	{
 		displayHelpMenu();
@@ -305,70 +347,98 @@ void parseUserCommand(Player &player, Room *currentRoom, Room roomArray[3][5], i
 	{
 		attack(player, currentRoom);
 	}
-	else if (command == "look")
+	else if (command == "look" && command2 != "at")
 	{
 		std::cout << currentRoom->getLongDesc() << std::endl;
 		std::cout << currentRoom->getDependentDesc() << std::endl << std::endl;
 	}
-	else if (command == "look at item")
+	else if (command == "look" && command2 == "at")
 	{
-		std::cout << "look at item test." << std::endl;
+		std::cout << "look at -" << command3 << "- test." << std::endl;
 	}
-	else if (command == "take item")
+	else if (command == "take")
 	{
-		std::cout << "take item test." << std::endl;
+		std::cout << "take -" << command2 << "- test." << std::endl;
+
 	}
-	else if (command == "drop item")
+	else if (command == "drop")
 	{
-		std::cout << "drop item test." << std::endl;
+		std::cout << "drop -" << command2 << "- test." << std::endl;
 	}
 	else if (command == "inventory")
 	{
 		std::cout << "inventory test." << std::endl;
 	}
 
-	else if (command == "use item")
+	else if (command == "use")
 	{
-		std::cout << "use item test." << std::endl;
+		std::cout << "use -" << command2 << "- test." << std::endl;
 	}
 	else
 	{
-		std::cout << std::endl << "That is not a valid command." << std::endl;
+		std::cout << std::endl << "That is not a valid command." << std::endl << std::endl;
 	}
 
 }
 
+
+/*********************************************************************
+* This function displays a description each time the players navigates
+* to a new room.
+**********************************************************************/
 void displayRoomDesc(Room *currentRoom)
 {
 	std::cout << std::endl;
 
+	//if the room has been visted before, show only a short description
 	if (currentRoom->getHasVisited() == true)
 	{
 		std::cout << currentRoom->getShortDesc() << std::endl;
-
+		//display dependent description if not empty
 		if (currentRoom->getDependentDesc() != "")
 		{
 			std::cout << currentRoom->getDependentDesc() << std::endl;
 		}
 	}
 	else
-	{
+	{	
+		//if the room has not been visited before, display the long description
 		std::cout << currentRoom->getLongDesc() << std::endl;
 
+		//display dependent description if not empty
 		if (currentRoom->getDependentDesc() != "")
 		{
 			std::cout << currentRoom->getDependentDesc() << std::endl;
 		}
 	}
 
+	//display the items and features within the room
+	//displayItemList(currentRoom);
+	std::cout << "current item size: " << currentRoom->getItems().size() << std::endl;
+	std::cout << "Items in room: " << std::endl;
+	for (int i = 0; i < currentRoom->getItems().size(); i++)
+	{
+		//if(currentRoom->getItems()[i] != "")
+			std::cout << currentRoom->getItems()[i] << std::endl;
+	}
 	std::cout << std::endl;
 }
 
+
+/*********************************************************************
+* This function displays the opening introduction.
+**********************************************************************/
 void displayIntro()
 {
 	std::cout << std::endl << "Intro here Intro here Intro here " << std::endl << std::endl;
 }
 
+
+/*********************************************************************
+* This function first tests to see if the player is on the bridge;
+* if so, the alienKilled objective is marked as true and the 
+* dependent description is also over written with an empty string.
+**********************************************************************/
 void attack(Player &player, Room *currentRoom)
 {
 	std::cout << std::endl;
@@ -386,6 +456,11 @@ void attack(Player &player, Room *currentRoom)
 	}
 }
 
+
+/*********************************************************************
+* This function displays a help menu that lists available
+* commands for use in the game.
+**********************************************************************/
 void displayHelpMenu()
 {
 	std::cout << std::endl;
@@ -395,6 +470,11 @@ void displayHelpMenu()
 	std::cout << std::endl;
 }
 
+
+/*********************************************************************
+* This function checks to see if all objectives were accomplished
+* and if they are, returns 1.
+**********************************************************************/
 int checkWinGame(Player &player)
 {
 	if (player.getFireOut() == true &&

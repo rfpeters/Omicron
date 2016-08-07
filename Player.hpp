@@ -13,6 +13,7 @@ class Player
 {
 	private:
 		int maxInventoryWeight;
+		int currentInventoryWeight;
 		std::vector<std::string> items;
 
 		//objectives and dependencies to check to see if command can be executed or if is game over
@@ -29,6 +30,8 @@ class Player
 		
 		//setters
 		void setMaxInventoryWeight(int);
+		void addCurrentInventoryWeight(int);
+		void subtractCurrentInventoryWeight(int);
 		void setFireOut(bool);
 		void setEngineFueled(bool);
 		void setShipStarted(bool);
@@ -39,6 +42,7 @@ class Player
 
 		//getters
 		int getMaxInventoryWeight();
+		int getCurrentInventoryWeight();
 		std::vector<std::string> getItems();
 		bool getFireOut();
 		bool getEngineFueled();

@@ -9,6 +9,7 @@
 Player::Player()
 {
 	maxInventoryWeight = 5;
+	currentInventoryWeight = 0;
 	fireOut = false;
 	engineFueled = false;
 	shipStarted = false;
@@ -21,6 +22,16 @@ Player::Player()
 void Player::setMaxInventoryWeight(int w)
 {
 	maxInventoryWeight = w;
+}
+
+void Player::addCurrentInventoryWeight(int w)
+{
+	currentInventoryWeight += w;
+}
+
+void Player::subtractCurrentInventoryWeight(int w)
+{
+	currentInventoryWeight -= w;
 }
 
 void Player::setFireOut(bool f)
@@ -59,6 +70,11 @@ void Player::setSpaceSuitOn(bool s)
 int Player::getMaxInventoryWeight()
 {
 	return maxInventoryWeight;
+}
+
+int Player::getCurrentInventoryWeight()
+{
+	return currentInventoryWeight;
 }
 
 std::vector<std::string> Player::getItems()

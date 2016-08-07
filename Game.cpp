@@ -322,8 +322,8 @@ void parseUserCommand(Player &player, Room *currentRoom, Room roomArray[3][5], i
   	{
 		command.erase(command.find(delimiter), command.length()); //string before first space
 		command2.erase(0, command2.find(delimiter) + delimiter.length()); //part after first space
-		std::cout << "command after delimited: " << command << std::endl;
-		std::cout << "command2 after delimited: " << command2 << std::endl;
+		//std::cout << "command after delimited: " << command << std::endl;
+		//std::cout << "command2 after delimited: " << command2 << std::endl;
 		
 		if (!(command2 != "fire extinguisher" || command2 != "access code")) ////////two-worded items should skip this step//////////////
 		{
@@ -334,8 +334,8 @@ void parseUserCommand(Player &player, Room *currentRoom, Room roomArray[3][5], i
 				command3 = command2;
 				command2.erase(command2.find(delimiter), command2.length()); //string before first space
 				command3.erase(0, command3.find(delimiter) + delimiter.length()); //part after first space
-				std::cout << "command2 after delimited: " << command2 << std::endl;
-				std::cout << "command3 after delimited: " << command3 << std::endl;
+				//std::cout << "command2 after delimited: " << command2 << std::endl;
+				//std::cout << "command3 after delimited: " << command3 << std::endl;
 			}
 		}
 	}
@@ -408,9 +408,8 @@ void parseUserCommand(Player &player, Room *currentRoom, Room roomArray[3][5], i
 	}
 	else if (command == "inventory")
 	{
-		std::cout << "inventory test." << std::endl;
-		std::cout << "current inventory size: " << player.getItems().size() << std::endl;
-		std::cout << "Items in inventory: " << std::endl;
+		//std::cout << "current inventory size: " << player.getItems().size() << std::endl;
+		std::cout << std::endl << "Items in inventory: " << std::endl;
 		for (int i = 0; i < player.getItems().size(); i++)
 		{
 			//if(currentRoom->getItems()[i] != "")

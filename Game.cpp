@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+//#include <algorithm>
 
 #include "Room.hpp"
 #include "Item.hpp"
@@ -23,8 +24,6 @@ int checkWinGame(Player&);
 int main()
 {
 	Player player; //has constructor to initialize all attributes
-
-
 
 	const int MAX_X = 3;	//horizontal
 	const int MAX_Y = 5;	//vertical
@@ -90,9 +89,11 @@ int main()
 			parseUserCommand(player, currentRoom, roomArray, currentX, currentY, userCommand);
 		}
 
+/*
 		currentRoom->addItem("added1");
 		currentRoom->addItem("added2");
 		currentRoom->removeItem("added1");
+*/
 /**************START TEST OF WIN GAME**********/
 		/*
 		if (userCommand == "switch objs to true")
@@ -109,7 +110,7 @@ int main()
 /**************END TEST OF WIN GAME**********/
 
 /**************START TEST OF PLAYER STATUS**********/
-		
+	/*	
 	std::cout << "maxInventoryWeight= " << player.getMaxInventoryWeight() << std::endl;
 	std::cout << "fireOut= " << player.getFireOut() << std::endl;
 	std::cout << "engineFueled= " << player.getEngineFueled() << std::endl;
@@ -349,8 +350,9 @@ void parseUserCommand(Player &player, Room *currentRoom, Room roomArray[3][5], i
 	}
 	else if (command == "look" && command2 != "at")
 	{
-		std::cout << currentRoom->getLongDesc() << std::endl;
-		std::cout << currentRoom->getDependentDesc() << std::endl << std::endl;
+		//std::cout << currentRoom->getLongDesc() << std::endl;
+		//std::cout << currentRoom->getDependentDesc() << std::endl << std::endl;
+		displayRoomDesc(currentRoom);
 	}
 	else if (command == "look" && command2 == "at")
 	{
@@ -358,16 +360,64 @@ void parseUserCommand(Player &player, Room *currentRoom, Room roomArray[3][5], i
 	}
 	else if (command == "take")
 	{
-		std::cout << "take -" << command2 << "- test." << std::endl;
+		bool inRoom = false;
+
+		//check to see if the item exists in room
+		for (int j = 0; j < currentRoom->getItems().size(); j++)
+		{
+			if (currentRoom->getItems()[j] == command2)
+				inRoom = true;
+		}
+
+		//if exists, add into inventory
+		if (inRoom)
+		{
+			player.addItem(command2);
+			currentRoom->removeItem(command2);
+			std::cout << std::endl << "You have added " << command2 << " into your inventory." << std::endl << std::endl;
+		}
+		else
+		{
+			std::cout << std::endl << command2 << " is not in this room." << std::endl << std::endl;
+		}
 
 	}
 	else if (command == "drop")
 	{
-		std::cout << "drop -" << command2 << "- test." << std::endl;
+		bool inInventory = false;
+
+		//check to see if the item exists in player's inventory
+		for (int k = 0; k < player.getItems().size(); k++)
+		{
+			if (player.getItems()[k] == command2)
+				inInventory = true;
+		}
+
+		//if exists, drop into room
+		if (inInventory)
+		{
+			currentRoom->addItem(command2);
+			player.removeItem(command2);
+			std::cout << std::endl << "You have removed " << command2 << " from your inventory." << std::endl << std::endl;
+		}
+		else
+		{
+			std::cout << std::endl << command2 << " is not in your inventory." << std::endl << std::endl;
+
+		}
 	}
 	else if (command == "inventory")
 	{
 		std::cout << "inventory test." << std::endl;
+		std::cout << "current inventory size: " << player.getItems().size() << std::endl;
+		std::cout << "Items in inventory: " << std::endl;
+		for (int i = 0; i < player.getItems().size(); i++)
+		{
+			//if(currentRoom->getItems()[i] != "")
+				std::cout << player.getItems()[i] << std::endl;
+		}
+		std::cout << std::endl;
+
 	}
 
 	else if (command == "use")
@@ -414,7 +464,7 @@ void displayRoomDesc(Room *currentRoom)
 
 	//display the items and features within the room
 	//displayItemList(currentRoom);
-	std::cout << "current item size: " << currentRoom->getItems().size() << std::endl;
+	std::cout << "current number of items in room: " << currentRoom->getItems().size() << std::endl;
 	std::cout << "Items in room: " << std::endl;
 	for (int i = 0; i < currentRoom->getItems().size(); i++)
 	{

@@ -3,6 +3,7 @@
  * ****************************************************************/
 
 #include "Player.hpp"
+#include <algorithm>
 
 //constructor
 Player::Player()
@@ -105,5 +106,6 @@ void Player::addItem(std::string item)
 
 void Player::removeItem(std::string item)
 {
-	
+	//reference: http://stackoverflow.com/questions/3385229/c-erase-vector-element-by-value-rather-than-by-position
+	items.erase(std::remove(items.begin(), items.end(), item), items.end());
 }

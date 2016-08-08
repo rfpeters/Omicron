@@ -20,7 +20,7 @@ void displayIntro();
 void displayHelpMenu();
 void attack(Player&, Room*);
 int checkWinGame(Player&);
-void eat(Player&, Room*);
+void eat(Player&, Room*, Item[8]);
 int getItemWeight(Item[8], std::string);
 
 int main()
@@ -428,7 +428,7 @@ void parseUserCommand(Player &player, Room *currentRoom, Item itemArray[8], int 
 	}
 	else if (command == "eat")
 	{
-		eat(player, currentRoom);
+		eat(player, currentRoom, itemArray);
 	}
 	else if (command == "look" && command2 != "at")
 	{
@@ -619,9 +619,18 @@ void displayIntro()
 **********************************************************************/
 void attack(Player &player, Room *currentRoom)
 {
+	bool hasBlaster = false;
+
+	for (int j = 0; j < player.getItems().size(); j++)
+	{
+		if (player.getItems()[j] == "blaster")
+		{
+			hasBlaster = true;
+		}
+	}
 	std::cout << std::endl;
 
-	if (currentRoom->getRoomName() == "bridge" && player.getAlienKilled() == false)
+	if (currentRoom->getRoomName() == "bridge" && player.getAlienKilled() == false && hasBlaster == true)
 	{
 		player.setAlienKilled(true);
 		currentRoom->setDependentDesc("");
@@ -630,7 +639,7 @@ void attack(Player &player, Room *currentRoom)
 	}
 	else
 	{
-		std::cout << "There is nothing to attack." << std::endl << std::endl;
+		std::cout << "Cannot attack." << std::endl << std::endl;
 	}
 }
 
@@ -681,11 +690,32 @@ int checkWinGame(Player &player)
 }
 
 
-void eat(Player &player, Room *currentRoom)
+void eat(Player &player, Room *currentRoom, Item itemArray[8])
 {
-	std::cout << " eat test." << std::endl;
-	//if player is in certain room and food is available
-	player.setFoodEaten(true);
+	//std::cout << " eat test." << std::endl;
+
+	bool hasFood = false;
+	//if player has food in inventory
+	for (int i = 0; i < player.getItems().size(); i++)
+	{
+		if (player.getItems()[i] == "food")
+		{
+			hasFood = true;
+		}
+		
+	}
+
+	if (hasFood)
+	{
+		player.setFoodEaten(true);
+		player.removeItem("food");//remove food from game if eaten
+		player.subtractCurrentInventoryWeight(getItemWeight(itemArray, "food"));
+		std::cout << std::endl << "You have eaten food. You have regained your strength." <<std::endl << std::endl;
+	}
+	else
+	{
+			std::cout << std::endl << "You have no food in inventory to eat." <<std::endl << std::endl;
+	}
 }
 
 int getItemWeight(Item itemArray[8], std::string itemName)

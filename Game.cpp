@@ -21,6 +21,7 @@ void displayHelpMenu();
 void attack(Player&, Room*);
 int checkWinGame(Player&);
 void eat(Player&, Room*);
+int getItemWeight(Item[8], std::string);
 
 int main()
 {
@@ -478,9 +479,18 @@ void parseUserCommand(Player &player, Room *currentRoom, Item itemArray[8], int 
 		//if exists, add into inventory
 		if (inRoom)
 		{
-			player.addItem(command2);
-			currentRoom->removeItem(command2);
-			std::cout << std::endl << "You have added " << command2 << " into your inventory." << std::endl << std::endl;
+			//if the weight of the item plus current weight of items is less than or equal to max weight, then add to inventory
+			if (getItemWeight(itemArray, command2) + player.getCurrentInventoryWeight() <= player.getMaxInventoryWeight())
+			{
+				player.addItem(command2);
+				currentRoom->removeItem(command2);
+				player.addCurrentInventoryWeight(getItemWeight(itemArray, command2));
+				std::cout << std::endl << "You have added " << command2 << " into your inventory." << std::endl << std::endl;
+			}
+			else
+			{
+				std::cout << std::endl << "You cannot add more to inventory. Max weight is 5 units." << std::endl << std::endl;
+			}
 		}
 		else
 		{
@@ -504,6 +514,7 @@ void parseUserCommand(Player &player, Room *currentRoom, Item itemArray[8], int 
 		{
 			currentRoom->addItem(command2);
 			player.removeItem(command2);
+			player.subtractCurrentInventoryWeight(getItemWeight(itemArray, command2));
 			std::cout << std::endl << "You have removed " << command2 << " from your inventory." << std::endl << std::endl;
 		}
 		else
@@ -517,9 +528,16 @@ void parseUserCommand(Player &player, Room *currentRoom, Item itemArray[8], int 
 		std::cout << std::endl << "Items in inventory: " << std::endl;
 		for (int i = 0; i < player.getItems().size(); i++)
 		{
-			std::cout << player.getItems()[i] << std::endl;
+			std::cout <<  "  " << player.getItems()[i];
+			for (int j = 0; j < 8; j++)
+			{	//disaply weight of each item
+				if (itemArray[j].getItemName() == player.getItems()[i])
+				{
+					std::cout << " (" << itemArray[j].getWeight() << ")" << std::endl;
+				}
+			}
 		}
-		std::cout << std::endl;
+		std::cout << "Current inventory weight: " << player.getCurrentInventoryWeight() << std::endl << std::endl;
 
 	}
 
@@ -668,4 +686,19 @@ void eat(Player &player, Room *currentRoom)
 	std::cout << " eat test." << std::endl;
 	//if player is in certain room and food is available
 	player.setFoodEaten(true);
+}
+
+int getItemWeight(Item itemArray[8], std::string itemName)
+{
+	int weight;
+
+	for (int j = 0; j < 8; j++)
+	{
+		if (itemArray[j].getItemName() == itemName)
+		{
+			weight = itemArray[j].getWeight();
+		}
+	}
+
+	return weight;
 }

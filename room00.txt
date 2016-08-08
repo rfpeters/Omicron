@@ -2,7 +2,7 @@ name:cargo hold
 long:long description cargo hold
 dependent:dependent description cargo hold
 short:You are in the cargo hold. There are doors to the north and east.
-item:item1
+item:spacesuit
 doorn:true
 doore:true
 doors:false

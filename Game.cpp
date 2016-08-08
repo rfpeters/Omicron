@@ -11,26 +11,46 @@
 #include "Item.hpp"
 #include "Player.hpp"
 
-
+void createItems(Item[8], int);
 void createRooms(Room[3][5], int, int);
 void moveRoom(Room*, int&, int&, std::string);
-void parseUserCommand(Player&, Room*, Room[3][5], int&, int &, std::string);
-void displayRoomDesc(Room*);
+void parseUserCommand(Player&, Room*, Item[8], int&, int &, std::string);
+void displayRoomDesc(Room*, Item[8]);
 void displayIntro();
 void displayHelpMenu();
 void attack(Player&, Room*);
 int checkWinGame(Player&);
+void eat(Player&, Room*);
 
 int main()
 {
 	Player player; //has constructor to initialize all attributes
 
+	const int MAX_ITEMS = 8;
 	const int MAX_X = 3;	//horizontal
 	const int MAX_Y = 5;	//vertical
 	int i, j;
+	Item itemArray[MAX_ITEMS];
+
+	createItems(itemArray, MAX_ITEMS);
+
 	Room roomArray[3][5];
 
 	createRooms(roomArray, MAX_X, MAX_Y);
+
+	/*******START TEST of ITEM CREATION*************/
+/*
+	for (j = 0; j < 8; j++)
+	{
+		std::cout << "item at " << j <<":" << std::endl;
+		std::cout << itemArray[j].getItemName() << std::endl;
+		std::cout << itemArray[j].getDesc() << std::endl;
+		std::cout << itemArray[j].getWeight() << std::endl;
+
+		std::cout << "weight + 10 =" << itemArray[j].getWeight() + 10 << std::endl;
+	}
+
+	/*******END TEST of ITEM CREATION*************/
 
 
 ////START OF ROOM STATUS TESTING
@@ -65,7 +85,7 @@ int main()
 
 
 	displayIntro();
-	displayRoomDesc(currentRoom);
+	displayRoomDesc(currentRoom, itemArray);
 	roomArray[currentX][currentY].setHasVisited(true);
 	
 
@@ -81,19 +101,15 @@ int main()
 		{
 			moveRoom(currentRoom, currentX, currentY, userCommand);
 			currentRoom = &roomArray[currentX][currentY];
-			displayRoomDesc(currentRoom);
+			displayRoomDesc(currentRoom, itemArray);
 			currentRoom->setHasVisited(true);
 		}
 		else
 		{
-			parseUserCommand(player, currentRoom, roomArray, currentX, currentY, userCommand);
+			parseUserCommand(player, currentRoom, itemArray, currentX, currentY, userCommand);
 		}
 
-/*
-		currentRoom->addItem("added1");
-		currentRoom->addItem("added2");
-		currentRoom->removeItem("added1");
-*/
+
 /**************START TEST OF WIN GAME**********/
 		/*
 		if (userCommand == "switch objs to true")
@@ -110,8 +126,9 @@ int main()
 /**************END TEST OF WIN GAME**********/
 
 /**************START TEST OF PLAYER STATUS**********/
-	/*	
+	/*
 	std::cout << "maxInventoryWeight= " << player.getMaxInventoryWeight() << std::endl;
+	std::cout << "currentInventoryWeight= " << player.getCurrentInventoryWeight() << std::endl;
 	std::cout << "fireOut= " << player.getFireOut() << std::endl;
 	std::cout << "engineFueled= " << player.getEngineFueled() << std::endl;
 	std::cout << "shipStarted= " << player.getShipStarted() << std::endl;
@@ -135,9 +152,66 @@ int main()
 	return 0;
 }
 
-
 /**********************************************************
-* This function reads in data and populated roomArray with
+* This function reads in data and populates itemArray with
+* that data.
+***********************************************************/
+void createItems(Item itemArray[8], int num)
+{
+	std::string line;
+	std::string data;
+	std::string delimiter = ":";
+	std::ifstream infile;
+	std::string roomFiles[8] = {"item1.txt", "item2.txt",  "item3.txt", "item4.txt",
+								"item5.txt", "item6.txt",  "item7.txt", "item8.txt"};
+	int fileIndex = 0;
+	
+	for (int i = 0; i < num; i++)
+	{
+		infile.open(roomFiles[fileIndex].c_str());
+			
+		if(infile)
+		{
+			std::getline(infile, line);
+			line.erase(0, line.find(delimiter) + delimiter.length());
+			if (!line.empty() && line[line.length() - 1] == '\r')
+			{
+				line.erase(line.length() - 1);
+			}
+			itemArray[i].setItemName(line);
+
+			std::getline(infile, line);
+			line.erase(0, line.find(delimiter) + delimiter.length());
+			if (!line.empty() && line[line.length() - 1] == '\r')
+			{
+				line.erase(line.length() - 1);
+			}
+			itemArray[i].setDesc(line);
+
+			std::getline(infile, line);
+			line.erase(0, line.find(delimiter) + delimiter.length());
+			if (!line.empty() && line[line.length() - 1] == '\r')
+			{
+				line.erase(line.length() - 1);
+			}
+			itemArray[i].setWeight(line[0] - 48); //ASCII is 48 less than decimal
+
+		}
+		else
+		{
+			std::cout << "Could not open file: " << roomFiles[i].c_str() << std::endl;
+		}
+
+		infile.close();
+
+		fileIndex++;
+	}
+
+
+
+}
+/**********************************************************
+* This function reads in data and populates roomArray with
 * that data.
 ***********************************************************/
 void createRooms(Room roomArray[3][5], int x, int y)
@@ -199,7 +273,10 @@ void createRooms(Room roomArray[3][5], int x, int y)
 				{
 					line.erase(line.length() - 1);
 				}
-				roomArray[i][j].addItem(line);
+				if (line != "") //if it is an empty string, don't add anything to the vector
+				{
+					roomArray[i][j].addItem(line);
+				}
 				
 				std::getline(infile, line);
 				line.erase(0, line.find(delimiter) + delimiter.length());
@@ -309,7 +386,7 @@ void moveRoom(Room *currentRoom, int &currentX, int &currentY, std::string d)
 
 }
 
-void parseUserCommand(Player &player, Room *currentRoom, Room roomArray[3][5], int &currentX, int &currentY, std::string command)
+void parseUserCommand(Player &player, Room *currentRoom, Item itemArray[8], int &currentX, int &currentY, std::string command)
 {
 	std::string command2 = command;
 	std::string delimiter = " ";
@@ -325,7 +402,7 @@ void parseUserCommand(Player &player, Room *currentRoom, Room roomArray[3][5], i
 		//std::cout << "command after delimited: " << command << std::endl;
 		//std::cout << "command2 after delimited: " << command2 << std::endl;
 		
-		if (!(command2 != "fire extinguisher" || command2 != "access code")) ////////two-worded items should skip this step//////////////
+		if (!(command == "take" || command == "drop")) //skip two-worded items
 		{
 			//If space found, split into another two strings.
 			found = command2.find(delimiter);
@@ -348,15 +425,44 @@ void parseUserCommand(Player &player, Room *currentRoom, Room roomArray[3][5], i
 	{
 		attack(player, currentRoom);
 	}
+	else if (command == "eat")
+	{
+		eat(player, currentRoom);
+	}
 	else if (command == "look" && command2 != "at")
 	{
 		//std::cout << currentRoom->getLongDesc() << std::endl;
 		//std::cout << currentRoom->getDependentDesc() << std::endl << std::endl;
-		displayRoomDesc(currentRoom);
+		displayRoomDesc(currentRoom, itemArray);
 	}
 	else if (command == "look" && command2 == "at")
 	{
-		std::cout << "look at -" << command3 << "- test." << std::endl;
+		//std::cout << "look at -" << command3 << "- test." << std::endl;
+
+		bool itemFound = false;
+
+		//if the item exists in the room
+		for (int i = 0; i < currentRoom->getItems().size(); i++)
+		{
+			if (currentRoom->getItems()[i] == command3)
+			{
+				//traverse through the itemArray to find the description
+				for (int j = 0; j < 8; j++)
+				{
+					if (itemArray[j].getItemName() == command3)
+					{
+						std::cout << std::endl << itemArray[j].getDesc() << std::endl << std::endl;
+						itemFound = true;
+					}
+				}
+			}
+		}
+
+
+		if (!itemFound)
+		{
+			std::cout << std::endl << "Cannot look at " << command3 << "." << std::endl << std::endl;
+		}
 	}
 	else if (command == "take")
 	{
@@ -408,12 +514,10 @@ void parseUserCommand(Player &player, Room *currentRoom, Room roomArray[3][5], i
 	}
 	else if (command == "inventory")
 	{
-		//std::cout << "current inventory size: " << player.getItems().size() << std::endl;
 		std::cout << std::endl << "Items in inventory: " << std::endl;
 		for (int i = 0; i < player.getItems().size(); i++)
 		{
-			//if(currentRoom->getItems()[i] != "")
-				std::cout << player.getItems()[i] << std::endl;
+			std::cout << player.getItems()[i] << std::endl;
 		}
 		std::cout << std::endl;
 
@@ -435,7 +539,7 @@ void parseUserCommand(Player &player, Room *currentRoom, Room roomArray[3][5], i
 * This function displays a description each time the players navigates
 * to a new room.
 **********************************************************************/
-void displayRoomDesc(Room *currentRoom)
+void displayRoomDesc(Room *currentRoom, Item itemArray[8])
 {
 	std::cout << std::endl;
 
@@ -463,12 +567,19 @@ void displayRoomDesc(Room *currentRoom)
 
 	//display the items and features within the room
 	//displayItemList(currentRoom);
-	std::cout << "current number of items in room: " << currentRoom->getItems().size() << std::endl;
+	//std::cout << "current number of items in room: " << currentRoom->getItems().size() << std::endl;
 	std::cout << "Items in room: " << std::endl;
 	for (int i = 0; i < currentRoom->getItems().size(); i++)
 	{
 		//if(currentRoom->getItems()[i] != "")
-			std::cout << currentRoom->getItems()[i] << std::endl;
+		std::cout << "  " << currentRoom->getItems()[i];
+		for (int j = 0; j < 8; j++)
+		{
+			if (itemArray[j].getItemName() == currentRoom->getItems()[i])
+			{
+				std::cout << " (" << itemArray[j].getWeight() << ")" << std::endl;
+			}
+		}
 	}
 	std::cout << std::endl;
 }
@@ -513,9 +624,20 @@ void attack(Player &player, Room *currentRoom)
 void displayHelpMenu()
 {
 	std::cout << std::endl;
-	std::cout << "This is the help menu." << std::endl;
-	std::cout << "This is the help menu. Max weight right now set to 5." << std::endl;
-	std::cout << "This is the help menu. List available commands." << std::endl;
+	std::cout << "Help Menu" << std::endl << std::endl;
+	std::cout << "List of available commands: " << std::endl;
+	std::cout << "  n, e, s, w - use to navigate through rooms" << std::endl;
+	std::cout << "  look - display long-form description" << std::endl;
+	std::cout << "  look at <feature or item> - displays description or explanation" << std::endl;
+	std::cout << "  attack - can be used when weapon is in your inventory" << std::endl;
+	std::cout << "  eat - can be used when food is in your inventory" << std::endl;
+	std::cout << "  take <item> - add item into your inventory" << std::endl;
+	std::cout << "  drop <item> - remove item from your inventory" << std::endl;
+	std::cout << "  inventory - lists item(s) in inventory" << std::endl;
+	std::cout << "  use <item> - use an item in your inventory" << std::endl;
+	std::cout << "  help - display help menu" << std::endl;
+	std::cout << "All commands should be typed in lowercase." << std::endl;
+	std::cout << "Max inventory weight is set to 5 units." << std::endl;
 	std::cout << std::endl;
 }
 
@@ -538,4 +660,12 @@ int checkWinGame(Player &player)
 	}
 	
 	return 0;
+}
+
+
+void eat(Player &player, Room *currentRoom)
+{
+	std::cout << " eat test." << std::endl;
+	//if player is in certain room and food is available
+	player.setFoodEaten(true);
 }

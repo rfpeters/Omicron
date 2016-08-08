@@ -2,7 +2,7 @@ name:general quarters 1
 long:long description general quarters 1
 dependent:
 short:You are in the general quarters 1. There are doors to the north and south.
-item:item13
+item:
 doorn:true
 doore:false
 doors:true

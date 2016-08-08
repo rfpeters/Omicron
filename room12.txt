@@ -2,7 +2,7 @@ name:sickbay
 long:long description sickbay
 dependent:
 short:You are in the sickbay. There are doors to the north, south and west.
-item:item8
+item:
 doorn:true
 doore:false
 doors:true

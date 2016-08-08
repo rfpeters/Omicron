@@ -2,7 +2,7 @@ name:mess hall
 long:long description mess hall
 dependent:dependent description mess hall
 short:You are in the mess hall. There are doors to the north and east.
-item:item4
+item:food
 doorn:true
 doore:true
 doors:false

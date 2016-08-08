@@ -2,7 +2,7 @@ name:lavatory
 long:long description lavatory
 dependent:
 short:You are in the lavatory and it stinks. There are doors to the north and south.
-item:item12
+item:
 doorn:true
 doore:false
 doors:true

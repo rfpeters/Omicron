@@ -2,7 +2,7 @@ name:lounge
 long:long description lounge
 dependent:
 short:You are in the lounge. There are doors to the north, east, south and west.
-item:item9
+item:identification card
 doorn:true
 doore:true
 doors:true

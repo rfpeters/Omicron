@@ -1,0 +1,3 @@
+name:identification card
+description:This is your identification card. It says your name is Muke Tywalker. It can be used to gain access to locked rooms.
+weight:1

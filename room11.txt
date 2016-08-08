@@ -2,7 +2,7 @@ name:science lab
 long:long description science lab
 dependent:
 short:You are in the science lab. There are doors to the north and south.
-item:item7
+item:antidote
 doorn:true
 doore:false
 doors:true

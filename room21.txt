@@ -1,9 +1,9 @@
 name:lavatory
 long:long description lavatory
 dependent:
-short:You are in the lavatory and it stinks. There are doors to the north and south.
+short:You are in the lavatory and it stinks. There is a door to the north.
 item:
 doorn:true
 doore:false
-doors:true
+doors:false
 doorw:false

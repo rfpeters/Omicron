@@ -1,9 +1,9 @@
 name:armory
 long:long description armory
 dependent:
-short:You are in the armory. There are doors to the north and west.
+short:You are in the armory. There is a door to the west.
 item:blaster
-doorn:true
+doorn:false
 doore:false
 doors:false
 doorw:true

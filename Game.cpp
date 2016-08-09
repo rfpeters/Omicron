@@ -22,6 +22,7 @@ int attack(Player&, Room*);
 int checkWinGame(Player&);
 void eat(Player&, Room*, Item[8]);
 int getItemWeight(Item[8], std::string);
+void putOnSpacesuit(Player&, std::string, Item[8]);
 
 int main()
 {
@@ -123,11 +124,11 @@ int main()
 			player.setFoodEaten(true);
 			player.setSpaceSuitOn(true);
 		}
-		*/
+		
 /**************END TEST OF WIN GAME**********/
 
 /**************START TEST OF PLAYER STATUS**********/
-	/*
+	
 	std::cout << "maxInventoryWeight= " << player.getMaxInventoryWeight() << std::endl;
 	std::cout << "currentInventoryWeight= " << player.getCurrentInventoryWeight() << std::endl;
 	std::cout << "fireOut= " << player.getFireOut() << std::endl;
@@ -429,38 +430,11 @@ void moveRoom(Room *currentRoom, int &currentX, int &currentY, std::string d, Pl
 
 int parseUserCommand(Player &player, Room *currentRoom, Item itemArray[8], int &currentX, int &currentY, std::string command)
 {
-	std::string command2 = command;
-	std::string delimiter = " ";
-	std::string command3;
-			
-
-	//parse use command delimited by space. If space found, split into two strings.
-	std::size_t found = command.find(delimiter);
-  	if (found!=std::string::npos)
-  	{
-		command.erase(command.find(delimiter), command.length()); //string before first space
-		command2.erase(0, command2.find(delimiter) + delimiter.length()); //part after first space
-		//std::cout << "command after delimited: " << command << std::endl;
-		//std::cout << "command2 after delimited: " << command2 << std::endl;
-		
-		if (!(command == "take" || command == "drop")) //skip two-worded items
-		{
-			//If space found, split into another two strings.
-			found = command2.find(delimiter);
-		  	if (found!=std::string::npos)
-		  	{
-				command3 = command2;
-				command2.erase(command2.find(delimiter), command2.length()); //string before first space
-				command3.erase(0, command3.find(delimiter) + delimiter.length()); //part after first space
-				//std::cout << "command2 after delimited: " << command2 << std::endl;
-				//std::cout << "command3 after delimited: " << command3 << std::endl;
-			}
-		}
-	}
-
+	//one-worded commands	
 	if (command == "help")
 	{
 		displayHelpMenu();
+		return 0;
 	}
 	else if (command == "attack")
 	{
@@ -471,43 +445,48 @@ int parseUserCommand(Player &player, Room *currentRoom, Item itemArray[8], int &
 	else if (command == "eat")
 	{
 		eat(player, currentRoom, itemArray);
+		return 0;
 	}
-	else if (command == "look" && command2 != "at")
+	else if (command == "look")
 	{
-		//std::cout << currentRoom->getLongDesc() << std::endl;
-		//std::cout << currentRoom->getDependentDesc() << std::endl << std::endl;
 		displayRoomDesc(currentRoom, itemArray);
+		return 0;
 	}
-	else if (command == "look" && command2 == "at")
+	else if (command == "inventory")
 	{
-		//std::cout << "look at -" << command3 << "- test." << std::endl;
-
-		bool itemFound = false;
-
-		//if the item exists in the room
-		for (int i = 0; i < currentRoom->getItems().size(); i++)
+		std::cout << std::endl << "Items in inventory: " << std::endl;
+		for (int i = 0; i < player.getItems().size(); i++)
 		{
-			if (currentRoom->getItems()[i] == command3)
-			{
-				//traverse through the itemArray to find the description
-				for (int j = 0; j < 8; j++)
+			std::cout <<  "  " << player.getItems()[i];
+			for (int j = 0; j < 8; j++)
+			{	//disaply weight of each item
+				if (itemArray[j].getItemName() == player.getItems()[i])
 				{
-					if (itemArray[j].getItemName() == command3)
-					{
-						std::cout << std::endl << itemArray[j].getDesc() << std::endl << std::endl;
-						itemFound = true;
-					}
+					std::cout << " (" << itemArray[j].getWeight() << ")" << std::endl;
 				}
 			}
 		}
-
-
-		if (!itemFound)
-		{
-			std::cout << std::endl << "Cannot look at " << command3 << "." << std::endl << std::endl;
-		}
+		std::cout << "Current inventory weight: " << player.getCurrentInventoryWeight() << std::endl << std::endl;
+		return 0;
 	}
-	else if (command == "take")
+
+
+	std::string command2 = command;
+	std::string delimiter = " ";
+	std::string command3;
+			
+	//two-worded commands
+	//parse use command delimited by space. If space found, split into two strings.
+	std::size_t found = command.find(delimiter);
+  	if (found!=std::string::npos)
+  	{
+		command.erase(command.find(delimiter), command.length()); //string before first space
+		command2.erase(0, command2.find(delimiter) + delimiter.length()); //part after first space
+		//std::cout << "command after delimited: " << command << std::endl;
+		//std::cout << "command2 after delimited: " << command2 << std::endl;
+	}
+
+	if (command == "take")
 	{
 		bool inRoom = false;
 
@@ -539,6 +518,7 @@ int parseUserCommand(Player &player, Room *currentRoom, Item itemArray[8], int &
 			std::cout << std::endl << command2 << " is not in this room." << std::endl << std::endl;
 		}
 
+		return 0;
 	}
 	else if (command == "drop")
 	{
@@ -564,40 +544,77 @@ int parseUserCommand(Player &player, Room *currentRoom, Item itemArray[8], int &
 			std::cout << std::endl << command2 << " is not in your inventory." << std::endl << std::endl;
 
 		}
+
+		return 0;
 	}
-	else if (command == "inventory")
+	else if (command == "use")
 	{
-		std::cout << std::endl << "Items in inventory: " << std::endl;
-		for (int i = 0; i < player.getItems().size(); i++)
+		//std::cout << "use -" << command2 << "- test." << std::endl;
+		if (command2 == "spacesuit")
 		{
-			std::cout <<  "  " << player.getItems()[i];
-			for (int j = 0; j < 8; j++)
-			{	//disaply weight of each item
-				if (itemArray[j].getItemName() == player.getItems()[i])
+			putOnSpacesuit(player, command2, itemArray);
+		}
+		else
+		{
+			std::cout << std::endl << "That is not a valid command." << std::endl << std::endl;
+		}
+
+		return 0;
+	}
+	
+
+	//three-worded command
+	if (!(command == "take" || command == "drop")) //skip two-worded items
+	{
+		//If space found, split into another two strings.
+		found = command2.find(delimiter);
+	  	if (found!=std::string::npos)
+	  	{
+			command3 = command2;
+			command2.erase(command2.find(delimiter), command2.length()); //string before first space
+			command3.erase(0, command3.find(delimiter) + delimiter.length()); //part after first space
+			//std::cout << "command2 after delimited: " << command2 << std::endl;
+			//std::cout << "command3 after delimited: " << command3 << std::endl;
+		}
+	}
+
+
+	
+	if (command == "look" && command2 == "at")
+	{
+		//std::cout << "look at -" << command3 << "- test." << std::endl;
+
+		bool itemFound = false;
+
+		//if the item exists in the room
+		for (int i = 0; i < currentRoom->getItems().size(); i++)
+		{
+			if (currentRoom->getItems()[i] == command3)
+			{
+				//traverse through the itemArray to find the description
+				for (int j = 0; j < 8; j++)
 				{
-					std::cout << " (" << itemArray[j].getWeight() << ")" << std::endl;
+					if (itemArray[j].getItemName() == command3)
+					{
+						std::cout << std::endl << itemArray[j].getDesc() << std::endl << std::endl;
+						itemFound = true;
+					}
 				}
 			}
 		}
-		std::cout << "Current inventory weight: " << player.getCurrentInventoryWeight() << std::endl << std::endl;
 
-	}
-
-	else if (command == "use")
-	{
-		std::cout << "use -" << command2 << "- test." << std::endl;
-		if (command2 == "spacesuit")
+		if (!itemFound)
 		{
-			player.setSpaceSuitOn(true);
-			std::cout << "You have put on the spacesuit and can enter any room without worrying about the atmosphere." << std::endl << std::endl;
-			player.removeItem(command2);
-			player.subtractCurrentInventoryWeight(getItemWeight(itemArray, command2));
+			std::cout << std::endl << "Cannot look at " << command3 << "." << std::endl << std::endl;
 		}
+
+		return 0;
 	}
-	else
-	{
-		std::cout << std::endl << "That is not a valid command." << std::endl << std::endl;
-	}
+	
+	
+
+	std::cout << std::endl << "That is not a valid command." << std::endl << std::endl;
+
 
 	return 0;
 
@@ -794,4 +811,29 @@ int getItemWeight(Item itemArray[8], std::string itemName)
 	}
 
 	return weight;
+}
+
+void putOnSpacesuit(Player &player, std::string command2, Item itemArray[8])
+{
+	bool suitInInventory = false;
+
+	for (int i = 0; i < player.getItems().size(); i++)
+	{
+		if (player.getItems()[i] == "spacesuit")
+		{
+			suitInInventory = true;
+		}
+	}
+
+	if (suitInInventory)
+	{
+		player.setSpaceSuitOn(true);
+		std::cout << std::endl << "You have put on the spacesuit and can enter any room without worrying about the atmosphere." << std::endl << std::endl;
+		player.removeItem(command2);
+		player.subtractCurrentInventoryWeight(getItemWeight(itemArray, command2));
+	}
+	else
+	{
+		std::cout << std::endl << "You do not have a spacesuit in your inventory." << std::endl << std::endl;
+	}
 }

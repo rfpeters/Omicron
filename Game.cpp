@@ -13,12 +13,12 @@
 
 void createItems(Item[8], int);
 void createRooms(Room[3][5], int, int);
-void moveRoom(Room*, int&, int&, std::string);
-void parseUserCommand(Player&, Room*, Item[8], int&, int &, std::string);
+void moveRoom(Room*, int&, int&, std::string, Player&);
+int parseUserCommand(Player&, Room*, Item[8], int&, int &, std::string);
 void displayRoomDesc(Room*, Item[8]);
 void displayIntro();
 void displayHelpMenu();
-void attack(Player&, Room*);
+int attack(Player&, Room*);
 int checkWinGame(Player&);
 void eat(Player&, Room*, Item[8]);
 int getItemWeight(Item[8], std::string);
@@ -79,7 +79,7 @@ int main()
 
 
 	int currentX = 1;
-	int currentY = 4;
+	int currentY = 0;
 	Room *currentRoom;
 	currentRoom = &roomArray[currentX][currentY];
 	std::string userCommand = "";
@@ -92,7 +92,7 @@ int main()
 
 /*****************game loop - start***********************/
 	do {
-		int verbFunction = 0;
+		int result = 0;
 		//std::cout << "Enter your command separated by spaces: " << std::endl; // for testing purposes
 		std::cout << "> ";
 		std::getline(std::cin, userCommand);
@@ -100,14 +100,14 @@ int main()
 		//if a direction is inputted
 		if (userCommand == "n" || userCommand == "e" || userCommand == "s" || userCommand == "w")
 		{
-			moveRoom(currentRoom, currentX, currentY, userCommand);
+			moveRoom(currentRoom, currentX, currentY, userCommand, player);
 			currentRoom = &roomArray[currentX][currentY];
 			displayRoomDesc(currentRoom, itemArray);
 			currentRoom->setHasVisited(true);
 		}
 		else
 		{
-			parseUserCommand(player, currentRoom, itemArray, currentX, currentY, userCommand);
+			result = parseUserCommand(player, currentRoom, itemArray, currentX, currentY, userCommand);
 		}
 
 
@@ -138,7 +138,20 @@ int main()
 	std::cout << "spaceSuitOn= " << player.getSpaceSuitOn() << std::endl;
 	
 /**************END TEST OF PLAYER STATUS**********/
-		
+		if (result == -1) //-1 means player died during attack command
+		{
+			break;
+		}
+
+		//if player went into armory without spacesuit on, he dies.
+		if (currentRoom->getRoomName() == "armory" && player.getSpaceSuitOn() == false)
+		{
+			std::cout << "The lack of atmospheric pressure tore you apart. You died!" << std::endl << std::endl;
+			std::cout << "GAME OVER" << std::endl << std::endl;
+			break;
+
+		}
+
 	
 		if (checkWinGame(player))
 		{
@@ -360,7 +373,7 @@ void createRooms(Room roomArray[3][5], int x, int y)
 * This function increments or decrements either the currentX or currentY
 * variables to navigate through the rooms.
 ************************************************************************/
-void moveRoom(Room *currentRoom, int &currentX, int &currentY, std::string d) 
+void moveRoom(Room *currentRoom, int &currentX, int &currentY, std::string d, Player &player) 
 {
 	
 	// move south
@@ -370,7 +383,34 @@ void moveRoom(Room *currentRoom, int &currentX, int &currentY, std::string d)
 
 	// move north
 	else if (d == "n" && currentRoom->getIsDoorN() == true) {
-		currentY++;
+
+		//check to see if he has id card in order to access the bridge
+		if (currentRoom->getRoomName() == "lounge")
+		{
+			bool hasIdCard = false;
+
+			for (int i = 0; i < player.getItems().size(); i++)
+			{
+				if (player.getItems()[i] == "identification card")
+				{
+					hasIdCard = true;
+				}
+			}
+			//if currently in the lounge and has indentification card, player can to go bridge
+			if (hasIdCard)
+			{
+				currentY++;
+			}
+			else 
+			{
+				std::cout << std::endl << "You cannot enter the bridge without your identification card in your inventory." << std::endl;
+			}
+
+		}
+		else
+		{
+			currentY++;
+		}
 	}
 
 	// move east
@@ -387,7 +427,7 @@ void moveRoom(Room *currentRoom, int &currentX, int &currentY, std::string d)
 
 }
 
-void parseUserCommand(Player &player, Room *currentRoom, Item itemArray[8], int &currentX, int &currentY, std::string command)
+int parseUserCommand(Player &player, Room *currentRoom, Item itemArray[8], int &currentX, int &currentY, std::string command)
 {
 	std::string command2 = command;
 	std::string delimiter = " ";
@@ -424,7 +464,9 @@ void parseUserCommand(Player &player, Room *currentRoom, Item itemArray[8], int 
 	}
 	else if (command == "attack")
 	{
-		attack(player, currentRoom);
+		int result;
+		result = attack(player, currentRoom); //-1 means player died
+		return result;
 	}
 	else if (command == "eat")
 	{
@@ -544,11 +586,20 @@ void parseUserCommand(Player &player, Room *currentRoom, Item itemArray[8], int 
 	else if (command == "use")
 	{
 		std::cout << "use -" << command2 << "- test." << std::endl;
+		if (command2 == "spacesuit")
+		{
+			player.setSpaceSuitOn(true);
+			std::cout << "You have put on the spacesuit and can enter any room without worrying about the atmosphere." << std::endl << std::endl;
+			player.removeItem(command2);
+			player.subtractCurrentInventoryWeight(getItemWeight(itemArray, command2));
+		}
 	}
 	else
 	{
 		std::cout << std::endl << "That is not a valid command." << std::endl << std::endl;
 	}
+
+	return 0;
 
 }
 
@@ -617,7 +668,7 @@ void displayIntro()
 * if so, the alienKilled objective is marked as true and the 
 * dependent description is also over written with an empty string.
 **********************************************************************/
-void attack(Player &player, Room *currentRoom)
+int attack(Player &player, Room *currentRoom)
 {
 	bool hasBlaster = false;
 
@@ -632,15 +683,27 @@ void attack(Player &player, Room *currentRoom)
 
 	if (currentRoom->getRoomName() == "bridge" && player.getAlienKilled() == false && hasBlaster == true)
 	{
-		player.setAlienKilled(true);
-		currentRoom->setDependentDesc("");
+
+		if (player.getFoodEaten() == false)
+		{
+			std::cout << "You weren't strong enough to defeat the alien. You died!" << std::endl << std::endl;
+			std::cout << "GAME OVER" << std::endl << std::endl;
+			return -1;
+		}
+		else
+		{
+			player.setAlienKilled(true);
+			currentRoom->setDependentDesc("");
+		}
 
 		std::cout << "You killed the alien." << std::endl << std::endl;
 	}
 	else
 	{
-		std::cout << "Cannot attack." << std::endl << std::endl;
+		std::cout << "Cannot attack. You either do not have a weapon or there is nothing to attack." << std::endl << std::endl;
 	}
+
+	return 0;
 }
 
 

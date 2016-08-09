@@ -23,6 +23,11 @@ int checkWinGame(Player&);
 void eat(Player&, Room*, Item[8]);
 int getItemWeight(Item[8], std::string);
 void putOnSpacesuit(Player&, std::string, Item[8]);
+void restartShip(Player&, std::string , Room*);
+void putOutFire(Player&, std::string, Room*);
+void installPowerCore(Room*, Player&, std::string, Item[8]);
+void takeAntidote(Player&);
+
 
 int main()
 {
@@ -123,6 +128,7 @@ int main()
 			player.setAlienKilled(true);
 			player.setFoodEaten(true);
 			player.setSpaceSuitOn(true);
+			player.setAntidoteTaken(true);
 		}
 		
 /**************END TEST OF WIN GAME**********/
@@ -137,6 +143,7 @@ int main()
 	std::cout << "alienKilled= " << player.getAlienKilled() << std::endl;
 	std::cout << "foodEaten= " << player.getFoodEaten() << std::endl;
 	std::cout << "spaceSuitOn= " << player.getSpaceSuitOn() << std::endl;
+	std::cout << "antidoteTaken= " << player.getAntidoteTaken() << std::endl << std::endl;
 	
 /**************END TEST OF PLAYER STATUS**********/
 		if (result == -1) //-1 means player died during attack command
@@ -221,10 +228,8 @@ void createItems(Item itemArray[8], int num)
 
 		fileIndex++;
 	}
-
-
-
 }
+
 /**********************************************************
 * This function reads in data and populates roomArray with
 * that data.
@@ -392,7 +397,7 @@ void moveRoom(Room *currentRoom, int &currentX, int &currentY, std::string d, Pl
 
 			for (int i = 0; i < player.getItems().size(); i++)
 			{
-				if (player.getItems()[i] == "identification card")
+				if (player.getItems()[i] == "id card")
 				{
 					hasIdCard = true;
 				}
@@ -404,7 +409,7 @@ void moveRoom(Room *currentRoom, int &currentX, int &currentY, std::string d, Pl
 			}
 			else 
 			{
-				std::cout << std::endl << "You cannot enter the bridge without your identification card in your inventory." << std::endl;
+				std::cout << std::endl << "You cannot enter the bridge without your id card in your inventory." << std::endl;
 			}
 
 		}
@@ -549,14 +554,47 @@ int parseUserCommand(Player &player, Room *currentRoom, Item itemArray[8], int &
 	}
 	else if (command == "use")
 	{
-		//std::cout << "use -" << command2 << "- test." << std::endl;
-		if (command2 == "spacesuit")
+		bool inInventory = false;
+
+		//check to see if item is in inventory
+		for (int i = 0; i < player.getItems().size(); i++)
 		{
-			putOnSpacesuit(player, command2, itemArray);
+			if(player.getItems()[i] == command2)
+			{
+				inInventory = true;
+			}
+		}
+
+		if (inInventory)
+		{
+			if (command2 == "spacesuit")
+			{
+				putOnSpacesuit(player, command2, itemArray);
+			}
+			else if (command2 == "login key")
+			{
+				restartShip(player, command2, currentRoom);
+			}
+			else if (command2 == "fire extinguisher" || command2 == "extinguisher")
+			{
+				putOutFire(player, "fire extinguisher", currentRoom);
+			}
+			else if (command2 == "power core")
+			{
+				installPowerCore(currentRoom, player, command2, itemArray);
+			}
+			else if (command2 == "antidote")
+			{
+				takeAntidote(player);
+			}
+			else
+			{
+				std::cout << std::endl << "That is not a valid command." << std::endl << std::endl;
+			}
 		}
 		else
 		{
-			std::cout << std::endl << "That is not a valid command." << std::endl << std::endl;
+			std::cout << std::endl << command2 << " is not in your inventory." << std::endl << std::endl;		
 		}
 
 		return 0;
@@ -564,7 +602,8 @@ int parseUserCommand(Player &player, Room *currentRoom, Item itemArray[8], int &
 	
 
 	//three-worded command
-	if (!(command == "take" || command == "drop")) //skip two-worded items
+	//parse further
+	if (!(command == "take" || command == "drop" || command == "use")) //skip two-worded items
 	{
 		//If space found, split into another two strings.
 		found = command2.find(delimiter);
@@ -578,13 +617,12 @@ int parseUserCommand(Player &player, Room *currentRoom, Item itemArray[8], int &
 		}
 	}
 
-
 	
 	if (command == "look" && command2 == "at")
 	{
 		//std::cout << "look at -" << command3 << "- test." << std::endl;
 
-		bool itemFound = false;
+		bool itemPresent = false;
 
 		//if the item exists in the room
 		for (int i = 0; i < currentRoom->getItems().size(); i++)
@@ -597,27 +635,41 @@ int parseUserCommand(Player &player, Room *currentRoom, Item itemArray[8], int &
 					if (itemArray[j].getItemName() == command3)
 					{
 						std::cout << std::endl << itemArray[j].getDesc() << std::endl << std::endl;
-						itemFound = true;
+						itemPresent = true;
 					}
 				}
 			}
 		}
 
-		if (!itemFound)
+		//or if the item exists in inventory
+		for (int i = 0; i < player.getItems().size(); i++)
+		{
+			if (player.getItems()[i] == command3)
+			{
+				//traverse through the itemArray to find the description
+				for (int j = 0; j < 8; j++)
+				{
+					if (itemArray[j].getItemName() == command3)
+					{
+						std::cout << std::endl << itemArray[j].getDesc() << std::endl << std::endl;
+						itemPresent = true;
+					}
+				}
+			}
+		}
+
+		if (!itemPresent)
 		{
 			std::cout << std::endl << "Cannot look at " << command3 << "." << std::endl << std::endl;
 		}
 
 		return 0;
 	}
-	
-	
+
 
 	std::cout << std::endl << "That is not a valid command." << std::endl << std::endl;
 
-
 	return 0;
-
 }
 
 
@@ -772,8 +824,6 @@ int checkWinGame(Player &player)
 
 void eat(Player &player, Room *currentRoom, Item itemArray[8])
 {
-	//std::cout << " eat test." << std::endl;
-
 	bool hasFood = false;
 	//if player has food in inventory
 	for (int i = 0; i < player.getItems().size(); i++)
@@ -815,25 +865,84 @@ int getItemWeight(Item itemArray[8], std::string itemName)
 
 void putOnSpacesuit(Player &player, std::string command2, Item itemArray[8])
 {
-	bool suitInInventory = false;
+	player.setSpaceSuitOn(true);
+	std::cout << std::endl << "You have put on the spacesuit and can enter any room without worrying about the atmosphere." << std::endl << std::endl;
+	player.removeItem(command2);
+	player.subtractCurrentInventoryWeight(getItemWeight(itemArray, command2));
+}
 
-	for (int i = 0; i < player.getItems().size(); i++)
+void restartShip(Player &player, std::string command2, Room *currentRoom)
+{
+	if (currentRoom->getRoomName() == "bridge" && player.getShipStarted() == false)
 	{
-		if (player.getItems()[i] == "spacesuit")
+		if (player.getEngineFueled() == true) //if the engine has power core
 		{
-			suitInInventory = true;
+			player.setShipStarted(true);
+			std::cout << std::endl << "You have restarted the ship." << std::endl << std::endl;
 		}
-	}
-
-	if (suitInInventory)
-	{
-		player.setSpaceSuitOn(true);
-		std::cout << std::endl << "You have put on the spacesuit and can enter any room without worrying about the atmosphere." << std::endl << std::endl;
-		player.removeItem(command2);
-		player.subtractCurrentInventoryWeight(getItemWeight(itemArray, command2));
+		else
+		{
+			std::cout << std::endl << "The engine needs power before the ship can be restarted." << std::endl << std::endl;
+		}
 	}
 	else
 	{
-		std::cout << std::endl << "You do not have a spacesuit in your inventory." << std::endl << std::endl;
+		if (currentRoom->getRoomName() != "bridge")
+		{
+			std::cout << std::endl << "You cannot use " << command2 << "." << std::endl << std::endl;
+		}
+
+		else 
+		{
+			std::cout << std::endl << "The ship has already been restarted." << std::endl << std::endl;
+		}
+	}
+
+}
+
+void putOutFire(Player &player, std::string command2, Room *currentRoom)
+{
+	if (currentRoom->getRoomName() == "galley" && player.getFireOut() == false)
+	{
+
+		player.setFireOut(true);
+		std::cout << std::endl << "You have saved the ship from burning." << std::endl << std::endl;
+		currentRoom->setDependentDesc(""); //remove string about the fire
+	}
+	else
+	{
+		std::cout << std::endl << "You cannot use " << command2 << " because there is no fire." << std::endl << std::endl;
+	}
+
+}
+
+
+void installPowerCore(Room *currentRoom, Player &player, std::string command2, Item itemArray[8])
+{
+	if (currentRoom->getRoomName() == "engine room" && player.getEngineFueled() == false)
+	{
+		player.setEngineFueled(true);
+		std::cout << std::endl << "You have installed the power core and the ship can be powered up from the bridge." << std::endl << std::endl;
+		player.removeItem(command2);
+		player.subtractCurrentInventoryWeight(getItemWeight(itemArray, command2));
+		currentRoom->setDependentDesc("");
+	}
+	else
+	{
+		std::cout << std::endl << "You cannot use " << command2 << " because you are not in the engine room." << std::endl << std::endl;
+	}
+
+}
+
+void takeAntidote(Player &player)
+{
+	if (player.getAntidoteTaken() == false)
+	{
+		player.setAntidoteTaken(true);
+		std::cout << std::endl << "The antidote has cured you from the alien poison." << std::endl << std::endl;
+	}
+	else
+	{
+		std::cout << std::endl << "You have already taken the antidote." << std::endl << std::endl;
 	}
 }

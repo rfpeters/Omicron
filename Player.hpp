@@ -23,6 +23,7 @@ class Player
 		bool alienKilled;
 		bool foodEaten;
 		bool spaceSuitOn;
+		bool antidoteTaken;
 
 	public:
 		//constructor
@@ -38,6 +39,7 @@ class Player
 		void setAlienKilled(bool);
 		void setFoodEaten(bool);
 		void setSpaceSuitOn(bool);
+		void setAntidoteTaken(bool);
 
 
 		//getters
@@ -50,6 +52,7 @@ class Player
 		bool getAlienKilled();
 		bool getFoodEaten();
 		bool getSpaceSuitOn();
+		bool getAntidoteTaken();
 
 
 		void addItem(std::string);

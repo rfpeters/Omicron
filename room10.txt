@@ -1,6 +1,6 @@
 name:engine room
 long:long description engine room
-dependent:
+dependent:Engine needs power core.
 short:You are in the engine room. There are doors to the north, east and west.
 item:
 doorn:true

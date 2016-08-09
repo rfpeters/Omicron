@@ -16,6 +16,7 @@ Player::Player()
 	alienKilled = false;
 	foodEaten = false;
 	spaceSuitOn = false;
+	antidoteTaken = false;
 }
 
 //setters
@@ -62,6 +63,11 @@ void Player::setFoodEaten(bool f)
 void Player::setSpaceSuitOn(bool s)
 {
 	spaceSuitOn = s;
+}
+
+void Player::setAntidoteTaken(bool a)
+{
+	antidoteTaken = a;
 }
 
 
@@ -112,6 +118,10 @@ bool Player::getSpaceSuitOn()
 	return spaceSuitOn;
 }
 
+bool Player::getAntidoteTaken()
+{
+	return antidoteTaken;
+}
 
 
 //item storage

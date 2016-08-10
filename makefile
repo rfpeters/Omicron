@@ -3,9 +3,12 @@ PROGS := game
 all: $(PROGS)
 
 
-game: Animation.o Player.o Item.o Room.o Game.o 
-	g++ -g Player.o Item.o Room.o Animation.o Game.o -o game -lcurses
-	
+game: Feature.o Animation.o Player.o Item.o Room.o Game.o 
+	g++ -g Feature.o Player.o Item.o Room.o Animation.o Game.o -o game -lcurses
+
+Feature.o: Feature.cpp Feature.hpp
+	g++ -c Feature.cpp
+
 Animation.o: Animation.cpp Animation.hpp
 	g++ -c Animation.cpp
 

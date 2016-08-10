@@ -11,6 +11,7 @@
 #include "Item.hpp"
 #include "Player.hpp"
 #include "Animation.hpp"
+#include "Feature.hpp"
 
 void createItems(Item[8], int);
 void createRooms(Room[3][5], int, int);

@@ -7,5 +7,5 @@ doorn:false
 doore:true
 doors:true
 doorw:false
-feature1:
-feature2:
+feature1:terminal
+feature2:windshield

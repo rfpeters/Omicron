@@ -7,5 +7,5 @@ doorn:true
 doore:true
 doors:false
 doorw:false
-feature1:name1
-feature2:name2
+feature1:
+feature2:

@@ -26,9 +26,9 @@ int checkWinGame(Player&);
 void eat(Player&, Room*, Item[8]);
 int getItemWeight(Item[8], std::string);
 void putOnSpacesuit(Player&, std::string, Item[8]);
-void restartShip(Player&, std::string , Room*);
+void restartShip(Player&, std::string , Room*, Feature[30]);
 void putOutFire(Player&, std::string, Room*, Animation);
-void installPowerCore(Room*, Player&, std::string, Item[8], Animation);
+void installPowerCore(Room*, Player&, std::string, Item[8], Feature[30], Animation);
 void takeAntidote(Player&);
 
 
@@ -70,7 +70,7 @@ int main()
 
 
 	/*******START TEST of FEATURE CREATION*************/
-
+/*
 	for (j = 0; j < 30; j++)
 	{
 		std::cout << "item at " << j <<":" << std::endl;
@@ -84,7 +84,7 @@ int main()
 
 
 ////START OF ROOM STATUS TESTING
-	
+	/*
 	for (i = 0; i < MAX_X; i++)
 	{
 		for (j = 0; j < MAX_Y; j++)
@@ -110,8 +110,8 @@ int main()
 
 
 
-	int currentX = 1;
-	int currentY = 0;
+	int currentX = 1; //start at sickbay (1,2)
+	int currentY = 2;
 	Room *currentRoom;
 	currentRoom = &roomArray[currentX][currentY];
 	std::string userCommand = "";
@@ -543,6 +543,11 @@ int parseUserCommand(Player &player, Room *currentRoom, Item itemArray[8], Featu
 		displayHelpMenu();
 		return 0;
 	}
+	else if (command == "quit")
+	{
+		std::cout << std::endl << "You have quit the game. Your progress will not be saved." << std::endl << std::endl;
+		return -1;
+	}
 	else if (command == "attack")
 	{
 		int result;
@@ -622,7 +627,7 @@ int parseUserCommand(Player &player, Room *currentRoom, Item itemArray[8], Featu
 		}
 		else
 		{
-			std::cout << std::endl << command2 << " is not in this room." << std::endl << std::endl;
+			std::cout << std::endl << "Cannot take " << command2 << "." << std::endl << std::endl;
 		}
 
 		return 0;
@@ -675,7 +680,7 @@ int parseUserCommand(Player &player, Room *currentRoom, Item itemArray[8], Featu
 			}
 			else if (command2 == "login key")
 			{
-				restartShip(player, command2, currentRoom);
+				restartShip(player, command2, currentRoom, featureArray);
 			}
 			else if (command2 == "fire extinguisher" || command2 == "extinguisher")
 			{
@@ -683,7 +688,7 @@ int parseUserCommand(Player &player, Room *currentRoom, Item itemArray[8], Featu
 			}
 			else if (command2 == "power core")
 			{
-				installPowerCore(currentRoom, player, command2, itemArray, an);
+				installPowerCore(currentRoom, player, command2, itemArray, featureArray, an);
 			}
 			else if (command2 == "antidote")
 			{
@@ -929,6 +934,7 @@ void displayHelpMenu()
 	std::cout << "  inventory - lists item(s) in inventory" << std::endl;
 	std::cout << "  use <item> - use an item in your inventory" << std::endl;
 	std::cout << "  help - display help menu" << std::endl;
+	std::cout << "  quit - ends game without saving" << std::endl;
 	std::cout << "All commands should be typed in lowercase." << std::endl;
 	std::cout << "Max inventory weight is set to 5 units." << std::endl;
 	std::cout << std::endl;
@@ -1004,7 +1010,7 @@ void putOnSpacesuit(Player &player, std::string command2, Item itemArray[8])
 	player.subtractCurrentInventoryWeight(getItemWeight(itemArray, command2));
 }
 
-void restartShip(Player &player, std::string command2, Room *currentRoom)
+void restartShip(Player &player, std::string command2, Room *currentRoom, Feature featureArray[30])
 {
 	if (currentRoom->getRoomName() == "bridge" && player.getShipStarted() == false)
 	{
@@ -1012,6 +1018,14 @@ void restartShip(Player &player, std::string command2, Room *currentRoom)
 		{
 			player.setShipStarted(true);
 			std::cout << std::endl << "You have restarted the ship." << std::endl << std::endl;
+			//set terminal's dependent description to empty string
+			for (int i = 0; i < 30; i++)
+			{
+				if (featureArray[i].getFeatureName() == "terminal")
+				{
+					featureArray[i].setDependentDesc("");
+				}
+			}
 		}
 		else
 		{
@@ -1050,7 +1064,7 @@ void putOutFire(Player &player, std::string command2, Room *currentRoom, Animati
 }
 
 
-void installPowerCore(Room *currentRoom, Player &player, std::string command2, Item itemArray[8], Animation an)
+void installPowerCore(Room *currentRoom, Player &player, std::string command2, Item itemArray[8], Feature featureArray[30], Animation an)
 {
 	if (currentRoom->getRoomName() == "engine room" && player.getEngineFueled() == false)
 	{
@@ -1060,6 +1074,14 @@ void installPowerCore(Room *currentRoom, Player &player, std::string command2, I
 		player.removeItem(command2);
 		player.subtractCurrentInventoryWeight(getItemWeight(itemArray, command2));
 		currentRoom->setDependentDesc("");
+		//set meter dependent description to empty string
+		for (int i = 0; i < 30; i++)
+		{
+			if (featureArray[i].getFeatureName() == "meter")
+			{
+				featureArray[i].setDependentDesc("The meter shows that the ship is at full power.");
+			}
+		}
 	}
 	else
 	{

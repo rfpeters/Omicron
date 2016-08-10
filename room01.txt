@@ -7,5 +7,5 @@ doorn:true
 doore:true
 doors:true
 doorw:false
-feature1:n3
-feature2:test29
+feature1:
+feature2:

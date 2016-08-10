@@ -10,13 +10,14 @@
 #include "Room.hpp"
 #include "Item.hpp"
 #include "Player.hpp"
+#include "Animation.hpp"
 
 void createItems(Item[8], int);
 void createRooms(Room[3][5], int, int);
 void moveRoom(Room*, int&, int&, std::string, Player&);
-int parseUserCommand(Player&, Room*, Item[8], int&, int &, std::string);
+int parseUserCommand(Player&, Room*, Item[8], int&, int &, std::string, Animation);
 void displayRoomDesc(Room*, Item[8]);
-void displayIntro();
+void displayIntro(Animation);
 void displayHelpMenu();
 int attack(Player&, Room*);
 int checkWinGame(Player&);
@@ -24,15 +25,15 @@ void eat(Player&, Room*, Item[8]);
 int getItemWeight(Item[8], std::string);
 void putOnSpacesuit(Player&, std::string, Item[8]);
 void restartShip(Player&, std::string , Room*);
-void putOutFire(Player&, std::string, Room*);
-void installPowerCore(Room*, Player&, std::string, Item[8]);
+void putOutFire(Player&, std::string, Room*, Animation);
+void installPowerCore(Room*, Player&, std::string, Item[8], Animation);
 void takeAntidote(Player&);
 
 
 int main()
 {
 	Player player; //has constructor to initialize all attributes
-
+	Animation an;
 	const int MAX_ITEMS = 8;
 	const int MAX_X = 3;	//horizontal
 	const int MAX_Y = 5;	//vertical
@@ -91,11 +92,11 @@ int main()
 	std::string userCommand = "";
 
 
-	displayIntro();
+	displayIntro(an);
 	displayRoomDesc(currentRoom, itemArray);
 	roomArray[currentX][currentY].setHasVisited(true);
 	
-
+	
 /*****************game loop - start***********************/
 	do {
 		int result = 0;
@@ -113,7 +114,7 @@ int main()
 		}
 		else
 		{
-			result = parseUserCommand(player, currentRoom, itemArray, currentX, currentY, userCommand);
+			result = parseUserCommand(player, currentRoom, itemArray, currentX, currentY, userCommand, an);
 		}
 
 
@@ -163,6 +164,7 @@ int main()
 	
 		if (checkWinGame(player))
 		{
+			an.end();
 			break;
 		}
 
@@ -433,7 +435,7 @@ void moveRoom(Room *currentRoom, int &currentX, int &currentY, std::string d, Pl
 
 }
 
-int parseUserCommand(Player &player, Room *currentRoom, Item itemArray[8], int &currentX, int &currentY, std::string command)
+int parseUserCommand(Player &player, Room *currentRoom, Item itemArray[8], int &currentX, int &currentY, std::string command, Animation an)
 {
 	//one-worded commands	
 	if (command == "help")
@@ -577,11 +579,11 @@ int parseUserCommand(Player &player, Room *currentRoom, Item itemArray[8], int &
 			}
 			else if (command2 == "fire extinguisher" || command2 == "extinguisher")
 			{
-				putOutFire(player, "fire extinguisher", currentRoom);
+				putOutFire(player, "fire extinguisher", currentRoom, an);
 			}
 			else if (command2 == "power core")
 			{
-				installPowerCore(currentRoom, player, command2, itemArray);
+				installPowerCore(currentRoom, player, command2, itemArray, an);
 			}
 			else if (command2 == "antidote")
 			{
@@ -726,8 +728,9 @@ void displayRoomDesc(Room *currentRoom, Item itemArray[8])
 /*********************************************************************
 * This function displays the opening introduction.
 **********************************************************************/
-void displayIntro()
+void displayIntro(Animation an)
 {
+	an.title();
 	std::cout << std::endl << "Intro here Intro here Intro here " << std::endl << std::endl;
 }
 
@@ -900,11 +903,11 @@ void restartShip(Player &player, std::string command2, Room *currentRoom)
 
 }
 
-void putOutFire(Player &player, std::string command2, Room *currentRoom)
+void putOutFire(Player &player, std::string command2, Room *currentRoom, Animation an)
 {
 	if (currentRoom->getRoomName() == "galley" && player.getFireOut() == false)
 	{
-
+		an.putOutFire();
 		player.setFireOut(true);
 		std::cout << std::endl << "You have saved the ship from burning." << std::endl << std::endl;
 		currentRoom->setDependentDesc(""); //remove string about the fire
@@ -917,10 +920,11 @@ void putOutFire(Player &player, std::string command2, Room *currentRoom)
 }
 
 
-void installPowerCore(Room *currentRoom, Player &player, std::string command2, Item itemArray[8])
+void installPowerCore(Room *currentRoom, Player &player, std::string command2, Item itemArray[8], Animation an)
 {
 	if (currentRoom->getRoomName() == "engine room" && player.getEngineFueled() == false)
 	{
+		an.addCore();
 		player.setEngineFueled(true);
 		std::cout << std::endl << "You have installed the power core and the ship can be powered up from the bridge." << std::endl << std::endl;
 		player.removeItem(command2);

@@ -17,6 +17,8 @@ class Room
 		std::string dependentDesc;
 		std::string shortDesc;
 		std::vector<std::string> items;
+		std::vector<std::string> features;
+
 
 		//for navigation, we can test to see if current room has a doorway
 		bool isDoorN;
@@ -44,6 +46,7 @@ class Room
 		std::string getDependentDesc();
 		std::string getShortDesc();
 		std::vector<std::string> getItems();
+		std::vector<std::string> getFeatures();
 		bool getIsDoorN();
 		bool getIsDoorE();
 		bool getIsDoorS();
@@ -52,6 +55,8 @@ class Room
 		
 		void addItem(std::string);
 		void removeItem(std::string);
+
+		void addFeature(std::string);
 
 };
 

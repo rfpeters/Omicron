@@ -5,7 +5,7 @@
 #include "Feature.hpp"
 
 //setters
-void Feature::getFeatureName(std::string name)
+void Feature::setFeatureName(std::string name)
 {
 	featureName = name;
 }

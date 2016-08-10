@@ -18,7 +18,7 @@ class Feature
 
 	public:
 		//setters
-		void getFeatureName(std::string);
+		void setFeatureName(std::string);
 		void setDesc(std::string);
 		void setDependentDesc(std::string);
 

@@ -14,9 +14,10 @@
 #include "Feature.hpp"
 
 void createItems(Item[8], int);
+void createFeatures(Feature[30], int);
 void createRooms(Room[3][5], int, int);
 void moveRoom(Room*, int&, int&, std::string, Player&);
-int parseUserCommand(Player&, Room*, Item[8], int&, int &, std::string, Animation);
+int parseUserCommand(Player&, Room*, Item[8], Feature[30], int&, int &, std::string, Animation);
 void displayRoomDesc(Room*, Item[8]);
 void displayIntro(Animation);
 void displayHelpMenu();
@@ -36,6 +37,7 @@ int main()
 	Player player; //has constructor to initialize all attributes
 	Animation an;
 	const int MAX_ITEMS = 8;
+	const int MAX_FEATURES = 30;
 	const int MAX_X = 3;	//horizontal
 	const int MAX_Y = 5;	//vertical
 	int i, j;
@@ -43,9 +45,14 @@ int main()
 
 	createItems(itemArray, MAX_ITEMS);
 
+
 	Room roomArray[3][5];
 
 	createRooms(roomArray, MAX_X, MAX_Y);
+
+	Feature featureArray[MAX_FEATURES];
+
+	createFeatures(featureArray, MAX_FEATURES);
 
 	/*******START TEST of ITEM CREATION*************/
 /*
@@ -62,8 +69,22 @@ int main()
 	/*******END TEST of ITEM CREATION*************/
 
 
+	/*******START TEST of FEATURE CREATION*************/
+
+	for (j = 0; j < 30; j++)
+	{
+		std::cout << "item at " << j <<":" << std::endl;
+		std::cout << featureArray[j].getFeatureName() << std::endl;
+		std::cout << featureArray[j].getDesc() << std::endl;
+		std::cout << featureArray[j].getDependentDesc() << std::endl;
+
+	}
+
+	/*******END TEST of FEATURE CREATION*************/
+
+
 ////START OF ROOM STATUS TESTING
-	/*
+	
 	for (i = 0; i < MAX_X; i++)
 	{
 		for (j = 0; j < MAX_Y; j++)
@@ -77,12 +98,15 @@ int main()
 			std::cout << roomArray[i][j].getIsDoorS() << std::endl;
 			std::cout << roomArray[i][j].getIsDoorW() << std::endl;
 			std::cout << "hasVisited == " << roomArray[i][j].getHasVisited() << std::endl << std::endl;
+
+			for (int k = 0; k < roomArray[i][j].getFeatures().size(); k++)
+				std::cout << "feature: " << roomArray[i][j].getFeatures()[k] << std::endl << std::endl;
 		}
 
 	}
-	*/
+	
 
-////END OF ROOM STATUS TESTING
+////*END OF ROOM STATUS TESTING*/
 
 
 
@@ -115,7 +139,7 @@ int main()
 		}
 		else
 		{
-			result = parseUserCommand(player, currentRoom, itemArray, currentX, currentY, userCommand, an);
+			result = parseUserCommand(player, currentRoom, itemArray, featureArray, currentX, currentY, userCommand, an);
 		}
 
 
@@ -136,7 +160,7 @@ int main()
 /**************END TEST OF WIN GAME**********/
 
 /**************START TEST OF PLAYER STATUS**********/
-	
+	/*
 	std::cout << "maxInventoryWeight= " << player.getMaxInventoryWeight() << std::endl;
 	std::cout << "currentInventoryWeight= " << player.getCurrentInventoryWeight() << std::endl;
 	std::cout << "fireOut= " << player.getFireOut() << std::endl;
@@ -231,6 +255,55 @@ void createItems(Item itemArray[8], int num)
 
 		fileIndex++;
 	}
+}
+
+void createFeatures(Feature featureArray[30], int num)
+{
+	std::string line;
+	std::string data;
+	std::string delimiter = ":";
+	std::ifstream infile;
+	std::string roomFile = "features.txt";
+	
+
+	infile.open(roomFile.c_str());
+		
+	if(infile)
+	{
+		for (int i = 0; i < num; i++)
+		{
+			std::getline(infile, line);
+			line.erase(0, line.find(delimiter) + delimiter.length());
+			if (!line.empty() && line[line.length() - 1] == '\r')
+			{
+				line.erase(line.length() - 1);
+			}
+			featureArray[i].setFeatureName(line);
+
+			std::getline(infile, line);
+			line.erase(0, line.find(delimiter) + delimiter.length());
+			if (!line.empty() && line[line.length() - 1] == '\r')
+			{
+				line.erase(line.length() - 1);
+			}
+			featureArray[i].setDesc(line);
+
+			std::getline(infile, line);
+			line.erase(0, line.find(delimiter) + delimiter.length());
+			if (!line.empty() && line[line.length() - 1] == '\r')
+			{
+				line.erase(line.length() - 1);
+			}
+			featureArray[i].setDependentDesc(line);
+		}
+	}
+	else
+	{
+		std::cout << "Could not open file: " << roomFile.c_str() << std::endl;
+	}
+
+	infile.close();
+
 }
 
 /**********************************************************
@@ -361,6 +434,32 @@ void createRooms(Room roomArray[3][5], int x, int y)
 				{
 					roomArray[i][j].setIsDoorW(false);
 				}
+
+				//add feature 1
+				std::getline(infile, line);
+				line.erase(0, line.find(delimiter) + delimiter.length());
+				if (!line.empty() && line[line.length() - 1] == '\r')
+				{
+					line.erase(line.length() - 1);
+				}
+				if (line != "") //if it is an empty string, don't add anything to the vector
+				{
+					roomArray[i][j].addFeature(line);
+				}
+
+				//add feature 2
+				std::getline(infile, line);
+				line.erase(0, line.find(delimiter) + delimiter.length());
+				if (!line.empty() && line[line.length() - 1] == '\r')
+				{
+					line.erase(line.length() - 1);
+				}
+				if (line != "") //if it is an empty string, don't add anything to the vector
+				{
+					roomArray[i][j].addFeature(line);
+				}
+
+
 				
 				roomArray[i][j].setHasVisited(false); //sets all rooms to not visited
 
@@ -436,7 +535,7 @@ void moveRoom(Room *currentRoom, int &currentX, int &currentY, std::string d, Pl
 
 }
 
-int parseUserCommand(Player &player, Room *currentRoom, Item itemArray[8], int &currentX, int &currentY, std::string command, Animation an)
+int parseUserCommand(Player &player, Room *currentRoom, Item itemArray[8], Feature featureArray[30], int &currentX, int &currentY, std::string command, Animation an)
 {
 	//one-worded commands	
 	if (command == "help")
@@ -638,7 +737,7 @@ int parseUserCommand(Player &player, Room *currentRoom, Item itemArray[8], int &
 					if (itemArray[j].getItemName() == command3)
 					{
 						std::cout << std::endl << itemArray[j].getDesc() << std::endl << std::endl;
-						itemPresent = true;
+						//itemPresent = true;
 					}
 				}
 			}
@@ -656,6 +755,30 @@ int parseUserCommand(Player &player, Room *currentRoom, Item itemArray[8], int &
 					{
 						std::cout << std::endl << itemArray[j].getDesc() << std::endl << std::endl;
 						itemPresent = true;
+					}
+				}
+			}
+		}
+
+		//or if the feature exists in the room
+		for (int i = 0; i < currentRoom->getFeatures().size(); i++)
+		{
+			if (currentRoom->getFeatures()[i] == command3)
+			{
+				//traverse through the itemArray to find the description
+				for (int j = 0; j < 8; j++)
+				{
+					if (featureArray[j].getFeatureName() == command3)
+					{
+						std::cout << std::endl << featureArray[j].getDesc() << std::endl;
+						itemPresent = true;
+
+						//if feature has dependent description
+						if(!(featureArray[j].getDependentDesc() == ""))
+						{
+							std::cout << featureArray[j].getDependentDesc() << std::endl;
+						}
+						std::cout << std::endl;
 					}
 				}
 			}
@@ -705,14 +828,21 @@ void displayRoomDesc(Room *currentRoom, Item itemArray[8])
 			std::cout << currentRoom->getDependentDesc() << std::endl;
 		}
 	}
+	std::cout << std::endl;
 
-	//display the items and features within the room
-	//displayItemList(currentRoom);
-	//std::cout << "current number of items in room: " << currentRoom->getItems().size() << std::endl;
+
+	//loop to display room features
+	std::cout << "Features in room: " << std::endl;
+	for (int i = 0; i < currentRoom->getFeatures().size(); i++)
+	{
+		std::cout << "  " << currentRoom->getFeatures()[i] << std::endl;
+	}
+	std::cout << std::endl;
+
+	//loop to display items in room
 	std::cout << "Items in room: " << std::endl;
 	for (int i = 0; i < currentRoom->getItems().size(); i++)
 	{
-		//if(currentRoom->getItems()[i] != "")
 		std::cout << "  " << currentRoom->getItems()[i];
 		for (int j = 0; j < 8; j++)
 		{
@@ -836,7 +966,6 @@ void eat(Player &player, Room *currentRoom, Item itemArray[8])
 		{
 			hasFood = true;
 		}
-		
 	}
 
 	if (hasFood)

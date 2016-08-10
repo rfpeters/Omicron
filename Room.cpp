@@ -112,3 +112,13 @@ void Room::removeItem(std::string item)
 	//reference: http://stackoverflow.com/questions/3385229/c-erase-vector-element-by-value-rather-than-by-position
 	items.erase(std::remove(items.begin(), items.end(), item), items.end());
 }
+
+void Room::addFeature(std::string feat)
+{
+	features.push_back(feat);
+}
+
+std::vector<std::string> Room::getFeatures()
+{
+	return features;
+}

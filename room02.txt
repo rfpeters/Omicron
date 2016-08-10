@@ -7,3 +7,5 @@ doorn:false
 doore:false
 doors:true
 doorw:false
+feature1:brig
+feature2:brig

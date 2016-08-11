@@ -7,5 +7,5 @@ doorn:false
 doore:false
 doors:true
 doorw:false
-feature1:
-feature2:
+feature1:sign
+feature2:freezer

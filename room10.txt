@@ -8,4 +8,4 @@ doore:true
 doors:false
 doorw:true
 feature1:meter
-feature2:
+feature2:foamies

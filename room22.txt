@@ -7,5 +7,5 @@ doorn:true
 doore:false
 doors:true
 doorw:false
-feature1:
-feature2:
+feature1:picture
+feature2:manual

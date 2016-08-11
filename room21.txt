@@ -7,5 +7,5 @@ doorn:true
 doore:false
 doors:false
 doorw:false
-feature1:
-feature2:
+feature1:trash
+feature2:manual

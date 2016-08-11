@@ -19,6 +19,7 @@ void createRooms(Room[3][5], int, int);
 void moveRoom(Room*, int&, int&, std::string, Player&);
 int parseUserCommand(Player&, Room*, Item[8], Feature[30], int&, int &, std::string, Animation);
 void displayRoomDesc(Room*, Item[8]);
+void displayLongDesc(Room*, Item[8]);
 void displayIntro(Animation);
 void displayHelpMenu();
 int attack(Player&, Room*);
@@ -561,7 +562,7 @@ int parseUserCommand(Player &player, Room *currentRoom, Item itemArray[8], Featu
 	}
 	else if (command == "look")
 	{
-		displayRoomDesc(currentRoom, itemArray);
+		displayLongDesc(currentRoom, itemArray);
 		return 0;
 	}
 	else if (command == "inventory")
@@ -742,53 +743,62 @@ int parseUserCommand(Player &player, Room *currentRoom, Item itemArray[8], Featu
 					if (itemArray[j].getItemName() == command3)
 					{
 						std::cout << std::endl << itemArray[j].getDesc() << std::endl << std::endl;
-						//itemPresent = true;
-					}
-				}
-			}
-		}
-
-		//or if the item exists in inventory
-		for (int i = 0; i < player.getItems().size(); i++)
-		{
-			if (player.getItems()[i] == command3)
-			{
-				//traverse through the itemArray to find the description
-				for (int j = 0; j < 8; j++)
-				{
-					if (itemArray[j].getItemName() == command3)
-					{
-						std::cout << std::endl << itemArray[j].getDesc() << std::endl << std::endl;
 						itemPresent = true;
 					}
 				}
 			}
 		}
 
-		//or if the feature exists in the room
-		for (int i = 0; i < currentRoom->getFeatures().size(); i++)
+		//if item was already found, don't go through your inventory
+		if (!itemPresent)
 		{
-			if (currentRoom->getFeatures()[i] == command3)
+			//or if the item exists in inventory
+			for (int i = 0; i < player.getItems().size(); i++)
 			{
-				//traverse through the itemArray to find the description
-				for (int j = 0; j < 8; j++)
+				if (player.getItems()[i] == command3)
 				{
-					if (featureArray[j].getFeatureName() == command3)
+					//traverse through the itemArray to find the description
+					for (int j = 0; j < 8; j++)
 					{
-						std::cout << std::endl << featureArray[j].getDesc() << std::endl;
-						itemPresent = true;
-
-						//if feature has dependent description
-						if(!(featureArray[j].getDependentDesc() == ""))
+						if (itemArray[j].getItemName() == command3)
 						{
-							std::cout << featureArray[j].getDependentDesc() << std::endl;
+							std::cout << std::endl << itemArray[j].getDesc() << std::endl << std::endl;
+							itemPresent = true;
 						}
-						std::cout << std::endl;
 					}
 				}
 			}
 		}
 
+		//if item was already found, don't go through the featureArray
+		if (!itemPresent)
+		{
+			//or if the feature exists in the room
+			for (int i = 0; i < currentRoom->getFeatures().size(); i++)
+			{
+				if (currentRoom->getFeatures()[i] == command3)
+				{
+					//traverse through the featureArray to find the description
+					for (int j = 0; j < 30; j++)
+					{
+						if (featureArray[j].getFeatureName() == command3)
+						{
+							std::cout << std::endl << featureArray[j].getDesc() << std::endl;
+							itemPresent = true;
+
+							//if feature has dependent description
+							if(!(featureArray[j].getDependentDesc() == ""))
+							{
+								std::cout << featureArray[j].getDependentDesc() << std::endl;
+							}
+							std::cout << std::endl;
+						}
+					}
+				}
+			}
+		}
+
+		//if it wasn't found as an item or a feature
 		if (!itemPresent)
 		{
 			std::cout << std::endl << "Cannot look at " << command3 << "." << std::endl << std::endl;
@@ -860,6 +870,46 @@ void displayRoomDesc(Room *currentRoom, Item itemArray[8])
 	std::cout << std::endl;
 }
 
+void displayLongDesc(Room *currentRoom, Item itemArray[8])
+{
+	std::cout << std::endl;
+
+	//if the room has not been visited before, display the long description
+	std::cout << currentRoom->getLongDesc() << std::endl;
+
+	//display dependent description if not empty
+	if (currentRoom->getDependentDesc() != "")
+	{
+		std::cout << currentRoom->getDependentDesc() << std::endl;
+	}
+	
+	std::cout << std::endl;
+
+
+	//loop to display room features
+	std::cout << "Features in room: " << std::endl;
+	for (int i = 0; i < currentRoom->getFeatures().size(); i++)
+	{
+		std::cout << "  " << currentRoom->getFeatures()[i] << std::endl;
+	}
+	std::cout << std::endl;
+
+	//loop to display items in room
+	std::cout << "Items in room: " << std::endl;
+	for (int i = 0; i < currentRoom->getItems().size(); i++)
+	{
+		std::cout << "  " << currentRoom->getItems()[i];
+		for (int j = 0; j < 8; j++)
+		{
+			if (itemArray[j].getItemName() == currentRoom->getItems()[i])
+			{
+				std::cout << " (" << itemArray[j].getWeight() << ")" << std::endl;
+			}
+		}
+	}
+	std::cout << std::endl;
+}
+
 
 /*********************************************************************
 * This function displays the opening introduction.
@@ -867,7 +917,9 @@ void displayRoomDesc(Room *currentRoom, Item itemArray[8])
 void displayIntro(Animation an)
 {
 	an.title();
-	std::cout << std::endl << "Intro here Intro here Intro here " << std::endl << std::endl;
+	std::cout << std::endl << "You see your son running on the sand and your wife standing near. She turns her head back towards you and calls your name. You try to speak but no sound can be heard. They are smiling and enjoying themselves. As you try to move closer they seem to get further and further away. The faster you run the quicker the memory starts to fade and all you see is a white light..." << std::endl << std::endl;
+	std::cout << "A bright light shines on your face as you lie in your cryogenic sleep pod. Cracks run down the glass cover and you pound your fists against the glass until the lid frees open. You are wet, cold, and naked. There are scrubs folded in the corner of the room and you rush to cover yourself. All the other pods are empty and the room was abandoned in a hurry. It's quiet, almost too quiet. You notice a red flashing light coming through the windows to the north, south and west. Something isn’t right. Where is everyone? They said you wouldn’t wake up until the spaceship arrived at the fleet training station." << std::endl << std::endl;
+	std::cout << "Type ‘help’ to display the help menu." << std::endl << std::endl;
 }
 
 

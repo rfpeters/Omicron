@@ -1,5 +1,5 @@
 name:armory
-long:It appears there was ion cannon blast to the external hull that the shield wasn’t able to fully absorb. This has caused a hull breach in the armory that requires you to wear a pressurized space suit. You are hopeful to find something to protect yourself while you traverse this spaceship. There has to be something around here… There is a door to the West. 
+long:It appears there was ion cannon blast to the external hull that the shield was not able to fully absorb. This has caused a hull breach in the armory. There is a door to the West. 
 dependent:
 short:You are in the armory. There is a door to the west.
 item:blaster

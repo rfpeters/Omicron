@@ -32,7 +32,7 @@
 11description:You view the menu posted on the wall. Looks like you missed steak night by one day.
 11dependent:
 12name:sanitizer
-12description:You use the hand sanitizer. Its no shower, but at least you feel cleaner than before. 
+12description:You use the hand sanitizer. It is no shower, but at least you feel cleaner than before. 
 12dependent:
 13name:sign
 13description:A safety sign on the wall reminds the cooks to wash their hands. 

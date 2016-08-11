@@ -7,5 +7,5 @@ doorn:false
 doore:false
 doors:false
 doorw:true
-feature1:
-feature2:
+feature1:cannon
+feature2:armor

@@ -7,5 +7,5 @@ doorn:true
 doore:true
 doors:false
 doorw:false
-feature1:
-feature2:
+feature1:menu
+feature2:sanitizer

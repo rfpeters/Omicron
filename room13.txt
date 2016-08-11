@@ -7,5 +7,5 @@ doorn:true
 doore:true
 doors:true
 doorw:true
-feature1:
-feature2:
+feature1:memo
+feature2:beer

@@ -7,5 +7,5 @@ doorn:false
 doore:false
 doors:true
 doorw:true
-feature1:
-feature2:
+feature1:diary
+feature2:screen

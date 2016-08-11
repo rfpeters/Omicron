@@ -8,4 +8,4 @@ doore:false
 doors:true
 doorw:true
 feature1:scanner
-feature2:
+feature2:monitor
